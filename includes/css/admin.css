@@ -1,0 +1,11 @@
+/* This stylesheet is loaded on the backed to help style the dashboard widget and the post_type icon */
+
+/* Dashboard Widget */
+#ac-portfolio .rsssummary { display: block; }
+#ac-portfolio .acp-widget-bottom { border-top: 1px solid #ddd; padding-top: 10px; text-align: center; }
+#ac-portfolio .acp-widget-bottom ul { list-style: none; }
+#ac-portfolio .acp-widget-bottom ul li { display: inline; padding-right: 10px; }
+#ac-portfolio .acp-widget-bottom img { padding-right: 3px; vertical-align: top; }
+
+/* Post Type icon */
+.icon32-posts-portfolio { background: url( images/portfolio-icon-32x32 ) transparent no-repeat !important; }
