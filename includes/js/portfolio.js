@@ -74,7 +74,4 @@ jQuery(document).ready(function(){
         portfolio_quicksand();	
     }
 
-
-
 });
-

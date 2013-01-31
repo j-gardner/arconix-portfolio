@@ -266,7 +266,7 @@ class Arconix_Portfolio {
 		elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
 			wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
 		else
-			wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+			wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'portfolio.min.js', array( 'jquery-easing' ), ACP_VERSION, true );
 
 		// CSS
 		if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
