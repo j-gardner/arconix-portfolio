@@ -16,205 +16,204 @@
 
 class Arconix_Portfolio {
 
-    /**
-     * Construct Method
-     */
-    function __construct() {
-    	$this->contants();
+	/**
+	 * Construct Method
+	 */
+	function __construct() {
+		$this->constants();
 
-        register_activation_hook( __FILE__, array( $this, 'activation' ) );
-        register_deactivation_hook( __FILE__, array( $this, 'deactivation' ) );
+		register_activation_hook( __FILE__, array( $this, 'activation' ) );
+		register_deactivation_hook( __FILE__, array( $this, 'deactivation' ) );
 
-        add_action( 'after_setup_theme', array( $this, 'add_post_thumbnail_support' ), 9999 );
-        add_action( 'manage_posts_custom_column', array( $this, 'columns_data' ) );
-        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
-        add_action( 'admin_enqueue_scripts', 'admin_css' );
-        add_action( 'right_now_content_table_end', array( $this, 'right_now' ) );
-        add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
-        
-        add_filter( 'manage_portfolio_posts_columns', array( $this, 'columns_filter' ) );
-        add_filter( 'post_updated_messages', array( $this, 'updated_messages' ) );
-        add_filter( 'widget_text', 'do_shortcode' );
-        
-        add_image_size( 'portfolio-thumb', 275, 200, TRUE );
-        add_image_size( 'portfolio-large', 620, 9999 );        
+		add_action( 'after_setup_theme', array( $this, 'add_post_thumbnail_support' ), 9999 );
+		add_action( 'manage_posts_custom_column', array( $this, 'columns_data' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'admin_enqueue_scripts', 'admin_css' );
+		add_action( 'right_now_content_table_end', array( $this, 'right_now' ) );
+		add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
 
-        add_shortcode( 'portfolio', array( $this, 'portfolio_shortcode' ) );        
-    }
+		add_filter( 'manage_portfolio_posts_columns', array( $this, 'columns_filter' ) );
+		add_filter( 'post_updated_messages', array( $this, 'updated_messages' ) );
+		add_filter( 'widget_text', 'do_shortcode' );
 
-    /**
-     * Define plugin constants
-     *
-     * @since  1.2.0
-     */
-    function constants() {
+		add_image_size( 'portfolio-thumb', 275, 200, TRUE );
+		add_image_size( 'portfolio-large', 620, 9999 );        
+
+		add_shortcode( 'portfolio', array( $this, 'portfolio_shortcode' ) );        
+	}
+
+	/**
+	 * Define plugin constants
+	 *
+	 * @since  1.2.0
+	 */
+	function constants() {
 		define( 'ACP_VERSION', '1.2.0' );
 		define( 'ACP_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
 		define( 'ACP_IMAGES_URL', trailingslashit( ACP_URL . 'images' ) );
-		define( 'ACP_INCLUDES_URL', trailingslashit( ACP_URL . 'includes' ) );    	
+		define( 'ACP_INCLUDES_URL', trailingslashit( ACP_URL . 'includes' ) );
 		define( 'ACP_CSS_URL', trailingslashit( ACP_INCLUDES_URL . 'css' ) );
 		define( 'ACP_JS_URL', trailingslashit( ACP_INCLUDES_URL . 'js' ) );
 		define( 'ACP_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
 		define( 'ACP_INCLUDES_DIR', trailingslashit( ACP_DIR . 'includes' ) );
-    }
+	}
 
-    /**
-     * Runs on Plugin Activation
-     * Registers our Post Type and Taxonomy
-     * 
-     * @since  1.2.0
-     */
-    function activation() {
-        $defaults = $this->portfolio_defaults();
-        register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
-        register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
-        flush_rewrite_rules();
-    }
+	/**
+	 * Runs on Plugin Activation
+	 * Registers our Post Type and Taxonomy
+	 * 
+	 * @since  1.2.0
+	 */
+	function activation() {
+		$defaults = $this->portfolio_defaults();
+		register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
+		register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
+		flush_rewrite_rules();
+	}
 
-    /**
-     * Runs on Plugin Deactivation
-     *
-     * @since  1.2.0
-     */
-    function deactivation() {
-    	flush_rewrite_rules();
-    }
+	/**
+	 * Runs on Plugin Deactivation
+	 *
+	 * @since  1.2.0
+	 */
+	function deactivation() {
+		flush_rewrite_rules();
+	}
 
-    /**
-     * Define the defaults used in the registration of the post type and taxonomy
-     *
-     * @since  1.2.0
-     * @return array $defaults
-     */
-    function portfolio_defaults() {
-        include_once( ACP_INCLUDES_DIR, 'defaults.php' );
+	/**
+	 * Define the defaults used in the registration of the post type and taxonomy
+	 *
+	 * @since  1.2.0
+	 * @return array $defaults
+	 */
+	function portfolio_defaults() {
+		include_once( ACP_INCLUDES_DIR, 'defaults.php' );
 
-        return apply_filters( 'arconix_portfolio_defaults', $defaults );
+		return apply_filters( 'arconix_portfolio_defaults', $defaults );
+	}
 
-    }
+	/**
+	 * Correct messages when Portfolio post type is saved
+	 *
+	 * @global stdObject $post
+	 * @global int $post_ID
+	 * @param array $messages
+	 * @return array $messages
+	 * @since 0.9
+	 */
+	function updated_messages( $messages ) {
+		global $post, $post_ID;
 
-    /**
-     * Correct messages when Portfolio post type is saved
-     *
-     * @global stdObject $post
-     * @global int $post_ID
-     * @param array $messages
-     * @return array $messages
-     * @since 0.9
-     */
-    function updated_messages( $messages ) {
-       global $post, $post_ID;
+		$messages['portfolio'] = array(
+			0 => '', // Unused. Messages start at index 1.
+			1 => sprintf( __( 'Portfolio Item updated. <a href="%s">View portfolio item</a>' ), esc_url( get_permalink($post_ID) ) ),
+			2 => __( 'Custom field updated.' ),
+			3 => __( 'Custom field deleted.' ),
+			4 => __( 'Portfolio item updated.' ),
+			/* translators: %s: date and time of the revision */
+			5 => isset( $_GET['revision'] ) ? sprintf( __( 'Portfolio item restored to revision from %s' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6 => sprintf( __( 'Portfolio item published. <a href="%s">View portfolio item</a>' ), esc_url( get_permalink($post_ID) ) ),
+			7 => __( 'Portfolio item saved.'),
+			8 => sprintf( __( 'Portfolio item submitted. <a target="_blank" href="%s">Preview portfolio item</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
+			9 => sprintf( __( 'Portfolio item scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview portfolio item</a>' ),
+			  // translators: Publish box date format, see http://php.net/date
+				date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) ),
+			10 => sprintf( __( 'Portfolio item draft updated. <a target="_blank" href="%s">Preview portfolio item</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
+		);
 
-       $messages['portfolio'] = array(
-	    0 => '', // Unused. Messages start at index 1.
-	    1 => sprintf( __( 'Portfolio Item updated. <a href="%s">View portfolio item</a>' ), esc_url( get_permalink($post_ID) ) ),
-	    2 => __( 'Custom field updated.' ),
-	    3 => __( 'Custom field deleted.' ),
-	    4 => __( 'Portfolio item updated.' ),
-	    /* translators: %s: date and time of the revision */
-	    5 => isset( $_GET['revision'] ) ? sprintf( __( 'Portfolio item restored to revision from %s' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-	    6 => sprintf( __( 'Portfolio item published. <a href="%s">View portfolio item</a>' ), esc_url( get_permalink($post_ID) ) ),
-	    7 => __( 'Portfolio item saved.'),
-	    8 => sprintf( __( 'Portfolio item submitted. <a target="_blank" href="%s">Preview portfolio item</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
-	    9 => sprintf( __( 'Portfolio item scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview portfolio item</a>' ),
-	      // translators: Publish box date format, see http://php.net/date
-         date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) ),
-	    10 => sprintf( __( 'Portfolio item draft updated. <a target="_blank" href="%s">Preview portfolio item</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
-       );
+		return $messages;
+	}
 
-        return $messages;
-    }
+	/**
+	 * Filter the columns on the admin screen and define our own
+	 *
+	 * @param array $columns
+	 * @return array $soumns
+	 * @since 0.9.0
+	 * @version  1.2.0
+	 */
+	function columns_filter ( $columns ) {
+		$columns = array(
+			'cb' => '<input type="checkbox" />',
+			'portfolio_thumbnail' => __( 'Image', 'acp' ),
+			'title' => __( 'Title', 'acp' ),
+			'portfolio_description' => __( 'Description', 'acp' ),
+			'portfolio_features' => __( 'Features', 'acp' ),
+			'date' => __( 'Date', 'acp' )
+		);
 
-    /**
-     * Filter the columns on the admin screen and define our own
-     *
-     * @param array $columns
-     * @return array $soumns
-     * @since 0.9.0
-     * @version  1.2.0
-     */
-    function columns_filter ( $columns ) {
-       $columns = array(
-           'cb' => '<input type="checkbox" />',
-           'portfolio_thumbnail' => __( 'Image', 'acp' ),
-           'title' => __( 'Title', 'acp' ),
-           'portfolio_description' => __( 'Description', 'acp' ),
-           'portfolio_features' => __( 'Features', 'acp' ),
-           'date' => __( 'Date', 'acp' )
-       );
+		return $columns;
+	}
 
-       return $columns;
-   }
+	/**
+	 * Filter the data that shows up in the columns we defined above
+	 *
+	 * @global  stdObject $post
+	 * @param  object $column
+	 * @since  0.9.0
+	 * @version  1.2.0
+	 */
+	function columns_data( $column ) {
+		global $post;
 
-    /**
-     * Filter the data that shows up in the columns we defined above
-     *
-     * @global  stdObject $post
-     * @param  object $column
-     * @since  0.9.0
-     * @version  1.2.0
-     */
-    function columns_data( $column ) {
-       global $post;
+		switch( $column ) {
+			case "portfolio_thumbnail":
+				printf( '<p>%s</p>', the_post_thumbnail( 'thumbnail' ) );
+				break;
+			case "portfolio_description":
+				the_excerpt();
+				break;
+			case "portfolio_features":
+				echo get_the_term_list( $post->ID, 'feature', '', ', ', '' );
+				break;
+		}
+	}
 
-       switch( $column ) {
-           case "portfolio_thumbnail":
-               printf( '<p>%s</p>', the_post_thumbnail( 'thumbnail' ) );
-               break;
-           case "portfolio_description":
-               the_excerpt();
-               break;
-           case "portfolio_features":
-               echo get_the_term_list( $post->ID, 'feature', '', ', ', '' );
-               break;
-       }
-   }
+	/**
+	 * Check for post-thumbnails and add portfolio post type to it
+	 *
+	 * @global type $_wp_theme_features
+	 * @since 0.9
+	 */
+	function add_post_thumbnail_support() {
+		global $_wp_theme_features;
 
-    /**
-     * Check for post-thumbnails and add portfolio post type to it
-     *
-     * @global type $_wp_theme_features
-     * @since 0.9
-     */
-    function add_post_thumbnail_support() {
-       global $_wp_theme_features;
+		if( ! isset( $_wp_theme_features['post-thumbnails'] ) )
+			$_wp_theme_features['post-thumbnails'] = array( array( 'portfolio' ) );
+		elseif( is_array( $_wp_theme_features['post-thumbnails'] ) )
+			$_wp_theme_features['post-thumbnails'][0][] = 'portfolio';
+	}
 
-       if( ! isset( $_wp_theme_features['post-thumbnails'] ) )
-           $_wp_theme_features['post-thumbnails'] = array( array( 'portfolio' ) );
-       elseif( is_array( $_wp_theme_features['post-thumbnails'] ) )
-           $_wp_theme_features['post-thumbnails'][0][] = 'portfolio';
-   }
+	/**
+	 * Portfolio Shortcode
+	 *
+	 * @param array $atts
+	 * @param string $content
+	 * @since 0.9
+	 * @version 1.2.0
+	 */
+	function portfolio_shortcode( $atts, $content = null ) {
+		// Shortcode defaults
+		$defaults = apply_filters( 'arconix_portfolio_shortcode_args',
+			array(
+				'link' => 'image',
+				'thumb' => 'portfolio-thumb',
+				'full' => 'portfolio-large',
+				'title' => 'above',
+				'display' => '',
+				'heading' => 'Display',
+				'orderby' => 'date',
+				'order' => 'desc',
+				'terms' => '',
+				'operator' => 'IN'
+			)
+		);
 
-    /**
-     * Portfolio Shortcode
-     *
-     * @param array $atts
-     * @param string $content
-     * @since 0.9
-     * @version 1.2.0
-     */
-    function portfolio_shortcode( $atts, $content = null ) {
-    	// Shortcode defaults
-    	$defaults = apply_filters( 'arconix_portfolio_shortcode_args',
-           array(
-              'link' => 'image',
-              'thumb' => 'portfolio-thumb',
-              'full' => 'portfolio-large',
-              'title' => 'above',
-              'display' => '',
-              'heading' => 'Display',
-              'orderby' => 'date',
-              'order' => 'desc',
-              'terms' => '',
-              'operator' => 'IN'
-              )
-           );
+		// Merge our two arrays together, using the values in $atts to override $defaults
+		$args = wp_parse_args( $atts, $defaults )
 
-    	// Merge our two arrays together, using the values in $atts to override $defaults
-    	$args = wp_parse_args( $atts, $defaults )
-
-        return get_portfolio_data( $args );
-    }
+		return get_portfolio_data( $args );
+	}
 
    /**
 	* Return Porfolio Content
@@ -240,25 +239,25 @@ class Arconix_Portfolio {
 	* @since  1.3
 	*
 	*/
-    get_portfolio_data( $args, echo = false ) {
-    	include_once( ACP_INCLUDES_DIR . 'get-data.php' );
+	get_portfolio_data( $args, echo = false ) {
+		include_once( ACP_INCLUDES_DIR . 'get-data.php' );
 
 		// Either echo or return the results
 		if( $echo )
 			echo $return;
 		else
 			return $return;
-    }
+	}
 
-    /**
-     * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
-     * allowing for an easy way to override the default template
-     *
-     * @since 0.9
-     * @version 1.2.0
-     */
-    function enqueue_scripts() {
-    	wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand.min.js', array( 'jquery' ), '1.3', true );
+	/**
+	 * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
+	 * allowing for an easy way to override the default template
+	 *
+	 * @since 0.9
+	 * @version 1.2.0
+	 */
+	function enqueue_scripts() {
+		wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand.min.js', array( 'jquery' ), '1.3', true );
 		wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3.min.js', array( 'jquery-quicksand' ), '1.3', true );
 
 		// JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load properly
@@ -287,32 +286,32 @@ class Arconix_Portfolio {
 		wp_enqueue_style( 'arconix-portfolio-admin', ACP_CSS_URL . 'admin.css', false, ACP_VERSION );
 	}
 
-    /**
-     * Adds a widget to the dashboard.
-     *
-     * @since 0.9.1
-     */
-    function register_dashboard_widget() {
-        wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
-    }
+	/**
+	 * Adds a widget to the dashboard.
+	 *
+	 * @since 0.9.1
+	 */
+	function register_dashboard_widget() {
+		wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
+	}
 
-    /**
-     * Output for the dashboard widget
-     *
-     * @since 0.9.1
-     * @version 1.2.0
-     */
-    function dashboard_widget_output() {
+	/**
+	 * Output for the dashboard widget
+	 *
+	 * @since 0.9.1
+	 * @version 1.2.0
+	 */
+	function dashboard_widget_output() {
 		include_once( ACP_INCLUDES_DIR . 'dash-widget.php' );
-    }
+	}
 
-    /**
-     * Add the Portfolio Post type to the "Right Now" Dashboard Widget
-     *
-     * @link http://bajada.net/2010/06/08/how-to-add-custom-post-types-and-taxonomies-to-the-wordpress-right-now-dashboard-widget
-     * @since  0.9.0
-     * @version  1.2.0
-     */
+	/**
+	 * Add the Portfolio Post type to the "Right Now" Dashboard Widget
+	 *
+	 * @link http://bajada.net/2010/06/08/how-to-add-custom-post-types-and-taxonomies-to-the-wordpress-right-now-dashboard-widget
+	 * @since  0.9.0
+	 * @version  1.2.0
+	 */
 	function right_now() {
 		include_once( ACP_INCLUDES_DIR . 'right-now.php' );
 	}
