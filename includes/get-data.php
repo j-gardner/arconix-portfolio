@@ -32,7 +32,7 @@ $defaults = array(
 	);
 
 	// If the user has defined any tax terms, then we create our tax_query and merge to our main query
-	if( $terms ) {            
+	if( $terms ) {
 		$tax_query_args = apply_filters( 'arconix_portfolio_tax_query_args', 
 			array(
 				'tax_query' => array(
@@ -48,7 +48,7 @@ $defaults = array(
 		
 		// Join the tax array to the general query
 		$args = array_merge( $args, $tax_query_args );
-	}	
+	}
 
 	$return = ''; // Var that will be concatenated with our portfolio data
 
@@ -159,6 +159,5 @@ $defaults = array(
 		$return .= '</li>';
 
 	endwhile;
-
+	}
 	$return .= '</ul>';
-}
