@@ -88,6 +88,7 @@ class Arconix_Portfolio {
         $defaults = $this->portfolio_defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
+        flush_rewrite_rules( false );
     }
 
     /**
@@ -261,7 +262,8 @@ class Arconix_Portfolio {
 
     /**
      * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
-     * allowing for an easy way to override the default template
+     * allowing for an easy way to override the default template. If you'd like to remove the CSS or JS entirely,
+     * such as when building the styles or scripts into a single file, simply add a filter that returns false
      *
      * @since 0.9
      * @version 1.2.0
@@ -276,7 +278,8 @@ class Arconix_Portfolio {
         elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
             wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
         else
-            wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'portfolio.min.js', array( 'jquery-easing' ), ACP_VERSION, true );
+            if( apply_filters( 'pre_register_arconix_portfolio_js', true ) )
+                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'portfolio.min.js', array( 'jquery-easing' ), ACP_VERSION, true );
 
         // CSS
         if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
@@ -284,7 +287,8 @@ class Arconix_Portfolio {
         elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
             wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
         else
-            wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'portfolio.css', false, ACP_VERSION );
+            if( apply_filters( 'pre_register_arconix_portfolio_css', true ) )
+                wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'portfolio.css', false, ACP_VERSION );
     }
 
     /**
