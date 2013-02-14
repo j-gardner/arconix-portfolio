@@ -25,10 +25,10 @@ class Arconix_Portfolio {
         register_activation_hook( __FILE__, array( $this, 'activation' ) );
         register_deactivation_hook( __FILE__, array( $this, 'deactivation' ) );
 
-        add_action( 'init', array( $this, 'register_content_types' ) );
-        add_action( 'after_setup_theme', array( $this, 'add_post_thumbnail_support' ), 9999 );
+        add_action( 'init', array( $this, 'content_types' ) );
+        add_action( 'after_setup_theme', array( $this, 'post_thumbnail_support' ), 9999 );
         add_action( 'manage_posts_custom_column', array( $this, 'columns_data' ) );
-        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_css' ) );
         add_action( 'right_now_content_table_end', array( $this, 'right_now' ) );
         add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
@@ -84,7 +84,7 @@ class Arconix_Portfolio {
      *
      * @since 1.2.0
      */
-    function register_content_types() {
+    function content_types() {
         $defaults = $this->portfolio_defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
@@ -186,7 +186,7 @@ class Arconix_Portfolio {
      * @global type $_wp_theme_features
      * @since 0.9
      */
-    function add_post_thumbnail_support() {
+    function post_thumbnail_support() {
         global $_wp_theme_features;
 
         if( ! isset( $_wp_theme_features['post-thumbnails'] ) )
@@ -268,7 +268,7 @@ class Arconix_Portfolio {
      * @since 0.9
      * @version 1.2.0
      */
-    function enqueue_scripts() {
+    function scripts() {
         wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand.min.js', array( 'jquery' ), '1.3', true );
         wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3.min.js', array( 'jquery-quicksand' ), '1.3', true );
 
