@@ -57,6 +57,7 @@ class Arconix_Portfolio {
         define( 'ACP_JS_URL', trailingslashit( ACP_INCLUDES_URL . 'js' ) );
         define( 'ACP_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
         define( 'ACP_INCLUDES_DIR', trailingslashit( ACP_DIR . 'includes' ) );
+        define( 'ACP_VIEWS_DIR', trailingslashit( ACP_INCLUDES_DIR . 'views' ) );
     }
 
     /**
@@ -98,7 +99,7 @@ class Arconix_Portfolio {
      * @return array $defaults
      */
     function portfolio_defaults() {
-        include_once( ACP_INCLUDES_DIR . 'defaults.php' );
+        include_once( ACP_VIEWS_DIR . 'defaults.php' );
 
         return apply_filters( 'arconix_portfolio_defaults', $defaults );
     }
@@ -251,7 +252,7 @@ class Arconix_Portfolio {
     *
     */
     function get_portfolio_data( $args, $echo = false ) {
-        include_once( ACP_INCLUDES_DIR . 'get-data.php' );
+        include_once( ACP_VIEWS_DIR . 'get-data.php' );
 
         // Either echo or return the results
         if( $echo )
@@ -316,7 +317,7 @@ class Arconix_Portfolio {
      * @version 1.2.0
      */
     function dashboard_widget_output() {
-        include_once( ACP_INCLUDES_DIR . 'dash-widget.php' );
+        include_once( ACP_VIEWS_DIR . 'dash-widget.php' );
     }
 
     /**
@@ -327,7 +328,7 @@ class Arconix_Portfolio {
      * @version  1.2.0
      */
     function right_now() {
-        include_once( ACP_INCLUDES_DIR . 'right-now.php' );
+        include_once( ACP_VIEWS_DIR . 'right-now.php' );
     }
 }
 
