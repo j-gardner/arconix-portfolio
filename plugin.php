@@ -67,7 +67,7 @@ class Arconix_Portfolio {
      * @since  1.2.0
      */
     function activation() {
-        $this->register_content_types();
+        $this->content_types();
         flush_rewrite_rules();
     }
 
