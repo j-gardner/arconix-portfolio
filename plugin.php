@@ -264,14 +264,17 @@ class Arconix_Portfolio {
     /**
      * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
      * allowing for an easy way to override the default template. If you'd like to remove the CSS or JS entirely,
-     * such as when building the styles or scripts into a single file, simply add a filter that returns false
+     * such as when building the styles or scripts into a single file, simply reference the filter and return false
      *
      * @since 0.9
      * @version 1.2.0
      */
     function scripts() {
-        wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand.min.js', array( 'jquery' ), '1.3', true );
-        wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3.min.js', array( 'jquery-quicksand' ), '1.3', true );
+        // If WP_DEBUG is true, load the non-minified versions of the files (primarily for development environments)
+        WP_DEBUG === true ? $prefix = '' : $prefix = '.min';
+
+        wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.3', true );
+        wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
 
         // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load properly
         if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.js' ) )
@@ -280,7 +283,7 @@ class Arconix_Portfolio {
             wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
         else
             if( apply_filters( 'pre_register_arconix_portfolio_js', true ) )
-                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'portfolio.min.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio' $prefix . '.js', array( 'jquery-easing' ), ACP_VERSION, true );
 
         // CSS
         if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
@@ -289,7 +292,7 @@ class Arconix_Portfolio {
             wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
         else
             if( apply_filters( 'pre_register_arconix_portfolio_css', true ) )
-                wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'portfolio.css', false, ACP_VERSION );
+                wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'arconix-portfolio.css', false, ACP_VERSION );
     }
 
     /**
