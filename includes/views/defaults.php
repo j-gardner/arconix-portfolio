@@ -53,5 +53,18 @@ $defaults = array(
 			'query_var'					=> true,
 			'rewrite'					=> array( 'slug' => 'feature' )
 		)
+	),
+	'query_args' => array(
+		'link' 				=> 'image',
+	    'thumb' 			=> 'portfolio-thumb',
+	    'full' 				=> 'portfolio-large',
+	    'title' 			=> 'above',
+	    'display' 			=> '',
+	    'heading' 			=> 'Display',
+	    'orderby' 			=> 'date',
+	    'order' 			=> 'desc',
+	    'posts_per_page' 	=> -1,
+	    'terms' 			=> '',
+	    'operator' 			=> 'IN'
 	)
 );
