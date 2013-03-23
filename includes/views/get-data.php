@@ -1,10 +1,6 @@
 <?php
 $default_args = $this->portfolio_defaults();
-
 $defaults = $default_args['query_args'];
-
-// Allow the default arguments to be filtered
-$defaults = apply_filters( 'arconix_portfolio_data_defaults', $defaults );
 
 // Merge incoming args with the function defaults and then extract them into variables
 $defaults = wp_parse_args( $args, $defaults );
@@ -83,7 +79,6 @@ if( $portfolio_query->have_posts() ) {
 
         // Break each of the items into individual elements and modify the output
         foreach( $get_terms as $term ) {
-
             $term_list .= '<li><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
         }
 

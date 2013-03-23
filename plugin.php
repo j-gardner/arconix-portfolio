@@ -206,25 +206,13 @@ class Arconix_Portfolio {
      */
     function portfolio_shortcode( $atts, $content = null ) {
         // Shortcode defaults
-        $defaults = apply_filters( 'arconix_portfolio_shortcode_args',
-            array(
-                'link' => 'image',
-                'thumb' => 'portfolio-thumb',
-                'full' => 'portfolio-large',
-                'title' => 'above',
-                'display' => '',
-                'heading' => 'Display',
-                'orderby' => 'date',
-                'order' => 'desc',
-                'terms' => '',
-                'operator' => 'IN'
-            )
-        );
+        $default_args = $this->portfolio_defaults();
+        $defaults = $default_args['query_args'];
 
         // Merge our two arrays together, using the values in $atts to override $defaults
         $args = wp_parse_args( $atts, $defaults );
 
-        return get_portfolio_data( $args );
+        return $this->get_portfolio_data( $args );
     }
 
    /**
@@ -252,7 +240,7 @@ class Arconix_Portfolio {
     *
     */
     function get_portfolio_data( $args, $echo = false ) {
-        include_once( ACP_VIEWS_DIR . 'get-data.php' );
+        require_once( ACP_VIEWS_DIR . 'get-data.php' );
 
         // Either echo or return the results
         if( $echo )
@@ -283,7 +271,7 @@ class Arconix_Portfolio {
             wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
         else
             if( apply_filters( 'pre_register_arconix_portfolio_js', true ) )
-                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio' $prefix . '.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio' . $prefix . '.js', array( 'jquery-easing' ), ACP_VERSION, true );
 
         // CSS
         if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
