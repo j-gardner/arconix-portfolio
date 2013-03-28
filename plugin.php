@@ -22,25 +22,25 @@ class Arconix_Portfolio {
     function __construct() {
         $this->constants();
 
-        register_activation_hook( __FILE__, array( $this, 'activation' ) );
-        register_deactivation_hook( __FILE__, array( $this, 'deactivation' ) );
+        register_activation_hook( __FILE__,             array( $this, 'activation' ) );
+        register_deactivation_hook( __FILE__,           array( $this, 'deactivation' ) );
 
-        add_action( 'init', array( $this, 'content_types' ) );
-        add_action( 'after_setup_theme', array( $this, 'post_thumbnail_support' ), 9999 );
-        add_action( 'manage_posts_custom_column', array( $this, 'columns_data' ) );
-        add_action( 'wp_enqueue_scripts', array( $this, 'scripts' ) );
-        add_action( 'admin_enqueue_scripts', array( $this, 'admin_css' ) );
-        add_action( 'right_now_content_table_end', array( $this, 'right_now' ) );
-        add_action( 'wp_dashboard_setup', array( $this, 'register_dashboard_widget' ) );
+        add_action( 'init',                             array( $this, 'content_types' ) );
+        add_action( 'after_setup_theme',                array( $this, 'post_thumbnail_support' ), 9999 );
+        add_action( 'manage_posts_custom_column',       array( $this, 'columns_data' ) );
+        add_action( 'wp_enqueue_scripts',               array( $this, 'scripts' ) );
+        add_action( 'admin_enqueue_scripts',            array( $this, 'admin_css' ) );
+        add_action( 'right_now_content_table_end',      array( $this, 'right_now' ) );
+        add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );
 
-        add_filter( 'manage_portfolio_posts_columns', array( $this, 'columns_filter' ) );
-        add_filter( 'post_updated_messages', array( $this, 'updated_messages' ) );
-        add_filter( 'widget_text', 'do_shortcode' );
+        add_filter( 'manage_portfolio_posts_columns',   array( $this, 'columns_filter' ) );
+        add_filter( 'post_updated_messages',            array( $this, 'updated_messages' ) );
+        add_filter( 'widget_text',                      'do_shortcode' );
 
-        add_image_size( 'portfolio-thumb', 275, 200, TRUE );
-        add_image_size( 'portfolio-large', 620, 9999 );        
+        add_image_size( 'portfolio-thumb',              275, 200 );
+        add_image_size( 'portfolio-large',              620, 9999 );
 
-        add_shortcode( 'portfolio', array( $this, 'portfolio_shortcode' ) );        
+        add_shortcode( 'portfolio',                     array( $this, 'portfolio_shortcode' ) );
     }
 
     /**
@@ -49,15 +49,15 @@ class Arconix_Portfolio {
      * @since  1.2.0
      */
     function constants() {
-        define( 'ACP_VERSION', '1.2.0' );
-        define( 'ACP_URL', trailingslashit( plugin_dir_url( __FILE__ ) ) );
-        define( 'ACP_IMAGES_URL', trailingslashit( ACP_URL . 'images' ) );
-        define( 'ACP_INCLUDES_URL', trailingslashit( ACP_URL . 'includes' ) );
-        define( 'ACP_CSS_URL', trailingslashit( ACP_INCLUDES_URL . 'css' ) );
-        define( 'ACP_JS_URL', trailingslashit( ACP_INCLUDES_URL . 'js' ) );
-        define( 'ACP_DIR', trailingslashit( plugin_dir_path( __FILE__ ) ) );
-        define( 'ACP_INCLUDES_DIR', trailingslashit( ACP_DIR . 'includes' ) );
-        define( 'ACP_VIEWS_DIR', trailingslashit( ACP_INCLUDES_DIR . 'views' ) );
+        define( 'ACP_VERSION',          '1.2.0' );
+        define( 'ACP_URL',              trailingslashit( plugin_dir_url( __FILE__ ) ) );
+        define( 'ACP_IMAGES_URL',       trailingslashit( ACP_URL . 'images' ) );
+        define( 'ACP_INCLUDES_URL',     trailingslashit( ACP_URL . 'includes' ) );
+        define( 'ACP_CSS_URL',          trailingslashit( ACP_INCLUDES_URL . 'css' ) );
+        define( 'ACP_JS_URL',           trailingslashit( ACP_INCLUDES_URL . 'js' ) );
+        define( 'ACP_DIR',              trailingslashit( plugin_dir_path( __FILE__ ) ) );
+        define( 'ACP_INCLUDES_DIR',     trailingslashit( ACP_DIR . 'includes' ) );
+        define( 'ACP_VIEWS_DIR',        trailingslashit( ACP_INCLUDES_DIR . 'views' ) );
     }
 
     /**
@@ -89,7 +89,6 @@ class Arconix_Portfolio {
         $defaults = $this->portfolio_defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
-        flush_rewrite_rules( false );
     }
 
     /**
@@ -205,14 +204,7 @@ class Arconix_Portfolio {
      * @version 1.2.0
      */
     function portfolio_shortcode( $atts, $content = null ) {
-        // Shortcode defaults
-        $default_args = $this->portfolio_defaults();
-        $defaults = $default_args['query_args'];
-
-        // Merge our two arrays together, using the values in $atts to override $defaults
-        $args = wp_parse_args( $atts, $defaults );
-
-        return $this->get_portfolio_data( $args );
+        return $this->get_portfolio_data( $atts );
     }
 
    /**

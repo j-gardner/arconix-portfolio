@@ -1,10 +1,10 @@
 <?php
 $default_args = $this->portfolio_defaults();
-$defaults = $default_args['query_args'];
+$defaults = $default_args['query'];
 
 // Merge incoming args with the function defaults and then extract them into variables
-$defaults = wp_parse_args( $args, $defaults );
-extract( $defaults );
+$args = wp_parse_args( $args, $defaults );
+extract( $args );
 
 if( $title != "below" ) $title == "above"; // For backwards compatibility with "yes" and built-in data check
 
@@ -23,7 +23,7 @@ if( $terms ) {
         array(
             'tax_query' => array(
                 array(
-                    'taxonomy' => 'feature',
+                    'taxonomy' => $defaults['taxonomy']['slug'],
                     'field' => 'slug',
                     'terms' => $terms,
                     'operator' => $operator  
@@ -43,7 +43,7 @@ $portfolio_query = new WP_Query( $args );
 
 if( $portfolio_query->have_posts() ) {
     
-    $a = ''; // Var to hold our operate arguments
+    $a = array(); // Var to hold our operate arguments
     
     if( $terms ) {            
         // Translate our user-entered slug into an id we can use
@@ -61,7 +61,12 @@ if( $portfolio_query->have_posts() ) {
                 $a = array( 'include' => $termid );
                 break;
         }
+        
+        $a['orderby'] = $terms_orderby;
     }
+
+    // Allow a user to filter the terms list to add their own parameters.
+    $a = apply_filters( 'arconix_portfolio_get_terms', $a );
 
     // Get the tax terms only from the items in our query
     $get_terms = get_terms( 'feature', $a );        
