@@ -47,7 +47,7 @@ if( $portfolio_query->have_posts() ) {
     
     if( $terms ) {            
         // Translate our user-entered slug into an id we can use
-        $termid = get_term_by( 'slug', $terms, 'feature' );
+        $termid = get_term_by( 'slug', $terms, $defaults['taxonomy']['slug'] );
         $termid = $termid->term_id;
         
         // Change the get_terms argument based on the shortcode $operator, but default to IN
@@ -78,7 +78,7 @@ if( $portfolio_query->have_posts() ) {
         if( $heading)
             $return .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
 
-        $return .= '<li class="active"><a href="javascript:void(0)" class="all">All</a></li>';
+        $return .= '<li class="active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
 
         $term_list = '';
 
@@ -94,63 +94,63 @@ if( $portfolio_query->have_posts() ) {
 
     $return .= '<ul class="arconix-portfolio-grid">';
 
-while( $portfolio_query->have_posts() ) : $portfolio_query->the_post();
+    while( $portfolio_query->have_posts() ) : $portfolio_query->the_post();
 
-    // Get the terms list
-    $get_the_terms = get_the_terms( get_the_ID(), 'feature' );
+        // Get the terms list
+        $get_the_terms = get_the_terms( get_the_ID(), 'feature' );
 
-    // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
-    $return .= '<li data-id="id-' . get_the_ID() . '" data-type="';
-    
-    if( $get_the_terms ) {
-        foreach ( $get_the_terms as $term ) {
-            $return .= $term->slug . ' ';
+        // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
+        $return .= '<li data-id="id-' . get_the_ID() . '" data-type="';
+        
+        if( $get_the_terms ) {
+            foreach ( $get_the_terms as $term ) {
+                $return .= $term->slug . ' ';
+            }
         }
-    }
-    
-    $return .= '">';
+        
+        $return .= '">';
 
-    // Above image Title output
-    if( $title == "above" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
+        // Above image Title output
+        if( $title == "above" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
 
-    // Handle the image link
-    switch( $link ) {
-        case "page" :
-            $return .= '<a href="' . get_permalink() . '" rel="bookmark">';                        
-            $return .= get_the_post_thumbnail( get_the_ID(), $thumb );
-            $return .= '</a>';
-            break;
+        // Handle the image link
+        switch( $link ) {
+            case "page" :
+                $return .= '<a href="' . get_permalink() . '" rel="bookmark">';                        
+                $return .= get_the_post_thumbnail( get_the_ID(), $thumb );
+                $return .= '</a>';
+                break;
 
-        case "image" :
-            $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-            $return .= '<a href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-            $return .= get_the_post_thumbnail( get_the_ID(), $thumb );
-            $return .= '</a>';
-            break;
+            case "image" :
+                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
+                $return .= '<a href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                $return .= get_the_post_thumbnail( get_the_ID(), $thumb );
+                $return .= '</a>';
+                break;
 
-        default : // If it's anything else, return nothing.
-            break;
-    }
+            default : // If it's anything else, return nothing.
+                break;
+        }
 
-    // Below image Title output
-    if( $title == "below" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
+        // Below image Title output
+        if( $title == "below" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
 
-    // Display the content
-    switch( $display ) {
-        case "content" :
-            $return .= '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
-            break;
+        // Display the content
+        switch( $display ) {
+            case "content" :
+                $return .= '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
+                break;
 
-        case "excerpt" :
-            $return .= '<div class="arconix-portfolio-text">' . get_the_excerpt() . '</div>';
-            break;
+            case "excerpt" :
+                $return .= '<div class="arconix-portfolio-text">' . get_the_excerpt() . '</div>';
+                break;
 
-        default : // If it's anything else, return nothing.
-            break;
-    }
+            default : // If it's anything else, return nothing.
+                break;
+        }
 
-    $return .= '</li>';
+        $return .= '</li>';
 
-endwhile;
+    endwhile;
 }
 $return .= '</ul>';
