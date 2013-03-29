@@ -52,8 +52,11 @@ I can certainly look into it. Contact me through [Twitter](http://arcnx.co/twitt
 == Changelog ==
 
 = 1.2.0 =
+* Prevent the html from loading if the taxonomy heading isn't set
+* Fixed a missing translation string
+* When using the features taxonomy, users can now pass `terms_orderby` as a shortcode parameter which will allow them to set the order of the terms to any of the [available options](http://codex.wordpress.org/Function_Reference/get_terms#Possible_Arguments)
 * Added a pre_register filter for the CSS and Javascript which will allow for additional customization options for advanced users
-* The JS files are now minified, which significantly reduces the payload. Translation: Smaller files = faster browser performance
+* The JS files are now minified, which significantly reduces the payload. Translation: Smaller files = faster load times
 
 = 1.1.1 =
 * Fixed a php error when not using any "features"
