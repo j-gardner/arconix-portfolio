@@ -232,13 +232,7 @@ class Arconix_Portfolio {
     *
     */
     function get_portfolio_data( $args, $echo = false ) {
-        require_once( ACP_VIEWS_DIR . 'get-data.php' );
-
-        // Either echo or return the results
-        if( $echo )
-            echo $return;
-        else
-            return $return;
+        include( ACP_VIEWS_DIR . 'get-data.php' );
     }
 
     /**
@@ -256,23 +250,26 @@ class Arconix_Portfolio {
         wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.3', true );
         wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
 
-        // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load properly
-        if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.js' ) )
-            wp_register_script( 'arconix-portfolio-js', get_stylesheet_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
-        elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
-            wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
-        else
-            if( apply_filters( 'pre_register_arconix_portfolio_js', true ) )
+        // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load in the correct order
+        if( apply_filters( 'pre_register_arconix_portfolio_js', true ) ) {
+            if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.js' ) )
+                wp_register_script( 'arconix-portfolio-js', get_stylesheet_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+            elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
+                wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+            else
                 wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio' . $prefix . '.js', array( 'jquery-easing' ), ACP_VERSION, true );
+        }        
 
         // CSS
-        if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
-            wp_enqueue_style( 'arconix-portfolio', get_stylesheet_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
-        elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
-            wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
-        else
-            if( apply_filters( 'pre_register_arconix_portfolio_css', true ) )
+        if( apply_filters( 'pre_register_arconix_portfolio_css', true ) ) {
+            if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
+                wp_enqueue_style( 'arconix-portfolio', get_stylesheet_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
+            elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
+                wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
+            else
                 wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'arconix-portfolio.css', false, ACP_VERSION );
+        }
+        
     }
 
     /**
