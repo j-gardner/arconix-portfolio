@@ -65,7 +65,7 @@ if( $portfolio_query->have_posts() ) {
         $a['orderby'] = $terms_orderby;
     }
 
-    // Allow a user to filter the terms list to add their own parameters.
+    // Allow a user to filter the terms list to modify or add their own parameters.
     $a = apply_filters( 'arconix_portfolio_get_terms', $a );
 
     // Get the tax terms only from the items in our query
@@ -73,24 +73,25 @@ if( $portfolio_query->have_posts() ) {
     
     // If there are multiple terms in use, then run through our display list
     if( count( $get_terms ) > 1 )  {
-        $return .= '<ul class="arconix-portfolio-features">';
+        $display_list = '<ul class="arconix-portfolio-features">';
         
         if( $heading)
-            $return .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
+            $display_list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
 
-        $return .= '<li class="active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
-
-        $term_list = '';
+        $display_list .= '<li class="active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
 
         // Break each of the items into individual elements and modify the output
+        $term_list = '';        
         foreach( $get_terms as $term ) {
             $term_list .= '<li><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
         }
 
-        /** Return our modified list */
-        $return .= $term_list . '</ul>';
-    }
+        // Return our modified list
+        $display_list .= $term_list . '</ul>';
 
+        // Allow users to filter how the 'features' are displayed
+        $return .= apply_filters( 'arconix_portfolio_display_list', $display_list );
+    }
 
     $return .= '<ul class="arconix-portfolio-grid">';
 
@@ -154,3 +155,9 @@ if( $portfolio_query->have_posts() ) {
     endwhile;
 }
 $return .= '</ul>';
+
+// Either echo or return the results
+    if( $echo )
+        echo $return;
+    else
+        return $return;
