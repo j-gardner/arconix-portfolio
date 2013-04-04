@@ -165,7 +165,8 @@ class Arconix_Portfolio {
                 'posts_per_page'    => -1,
                 'terms'             => '',
                 'operator'          => 'IN',
-                'terms_orderby'      => 'name'
+                'terms_orderby'     => 'name',
+                'terms_order'       => 'ASC'
             )
         );
 
@@ -364,9 +365,11 @@ class Arconix_Portfolio {
                         $a = array( 'include' => $termid );
                         break;
                 }
-                
-                $a['orderby'] = $terms_orderby;
             }
+
+            // Set our terms list orderby and order
+            $a['orderby'] = $terms_orderby;
+            $a['order'] = $terms_order;
 
             // Allow a user to filter the terms list to modify or add their own parameters.
             $a = apply_filters( 'arconix_portfolio_get_terms', $a );
