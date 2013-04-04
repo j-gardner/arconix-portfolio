@@ -30,7 +30,7 @@ With this plugin you can easily showcase your portfolio on your WordPress websit
 
 = How do I display my created portfolio items =
 
-* Create a WordPress Page and use the `[portfolio]` shortcode. See the [Documentation](http://http;//arcnx.co/apwiki "Arconix Portfolio Wiki") for more details and available options
+Create a WordPress Page and use the `[portfolio]` shortcode. See the [Documentation](http://http;//arcnx.co/apwiki "Arconix Portfolio Wiki") for more details and available options
 
 = Where can I find more information on how to use the plugin?  =
 
@@ -41,9 +41,9 @@ With this plugin you can easily showcase your portfolio on your WordPress websit
 
 * Check out the WordPress [support forum](http://arcnx.co/aphelp)
 
-= Can you add this or that option? =
+= I have a great idea for your plugin! =
 
-I can certainly look into it. Contact me through [Twitter](http://arcnx.co/twitter), [Facebook](http://arcnx.co/facebook) or my [Website](http://arcnx.co/1 "Arconix Computers"). Be sure to check out the [dev board](http://arcnx.co/aptrello) to see what's in the pipeline.
+That's fantastic! Feel free to submit a pull request over at [Github](http://arcnx.co/apsource), add an idea to the [Trello Board](http://arcnx.co/aptrello), or you can contact me through [Twitter](http://arcnx.co/twitter), [Facebook](http://arcnx.co/facebook) or my [Website](http://arcnx.co/1)
 
 == Screenshots ==
 1. Portfolio Custom Post Type listed on the WP backend
@@ -52,9 +52,9 @@ I can certainly look into it. Contact me through [Twitter](http://arcnx.co/twitt
 == Changelog ==
 
 = 1.2.0 =
-* Prevent the html from loading if the taxonomy heading is blank
+* Prevent the associated html from loading if the taxonomy heading is blank
 * Fixed a missing translation string
-* When using the features taxonomy, users can now pass `terms_orderby` as a shortcode parameter which will allow you to set the order of the terms to any of the [available options](http://codex.wordpress.org/Function_Reference/get_terms#Possible_Arguments)
+* When using the features taxonomy, users can now pass `terms_orderby` and `terms_order` as a shortcode parameter which will allow you to set the order of the terms to any of the [available options](http://codex.wordpress.org/Function_Reference/get_terms#Possible_Arguments)
 * Added a pre_register filter for the CSS and Javascript which will allow for additional customization options for advanced users
 * The JS files are now minified, which significantly reduces the payload. Translation: smaller files = faster load times
 
