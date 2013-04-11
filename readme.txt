@@ -38,9 +38,15 @@ Create a WordPress Page and use the `[portfolio]` shortcode. See the [Documentat
 * Visit the plugin's [Wiki Page](http://arcnx.co/apwiki) for documentation
 * Tutorials on advanced plugin usage can be found at [Arconix Computers](http://arconixpc.com/tag/arconix-portfolio)
 
+= The filtering isn't working. What can I do? =
+
+While you can certainly start a thread in the [support forum](http://arcnx.co/aphelp), there are some troubleshooting steps you can take beforehand to help speed up the process.
+1. Check to make sure the javascripts are loading correctly. Load the portfolio page in your browser and view your page's source. Look for jQuery, Quicksand and jQuery Easing files there. If you don't see Quicksand or the Easing scripts, then your theme's `footer.php` file is likely missing `<?php wp_footer(); ?>`, which is neccessary for the operation of mine and many other plugins.
+2. Check to make sure only one copy of jQuery is being loaded. Many times conflicts arise when themes or plugins load jQuery incorrectly, causing the script to be loaded multiple times in multiple versions. In order to find the offending item, start by disabling your plugins one by one until you find the problem. If you've disabled all your plugins, try switching to a different them, such as twentyten or twentytwelve to see if the problem is with your theme. Once you've found the problem, contact the developer for assistance getting the issue resolved.
+
 = I need help =
 
-* Check out the WordPress [support forum](http://arcnx.co/aphelp)
+Check out the WordPress [support forum](http://arcnx.co/aphelp)
 
 = I have a great idea for your plugin! =
 
