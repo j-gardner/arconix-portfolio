@@ -327,10 +327,10 @@ class Arconix_Portfolio {
                 array(
                     'tax_query' => array(
                         array(
-                            'taxonomy' => $defaults['taxonomy']['slug'],
+                            'taxonomy' => $default_args['taxonomy']['slug'],
                             'field' => 'slug',
                             'terms' => $terms,
-                            'operator' => $operator  
+                            'operator' => $operator
                         )
                     )
                 )
@@ -351,7 +351,7 @@ class Arconix_Portfolio {
             
             if( $terms ) {            
                 // Translate our user-entered slug into an id we can use
-                $termid = get_term_by( 'slug', $terms, $defaults['taxonomy']['slug'] );
+                $termid = get_term_by( 'slug', $terms, $default_args['taxonomy']['slug'] );
                 $termid = $termid->term_id;
                 
                 // Change the get_terms argument based on the shortcode $operator, but default to IN
