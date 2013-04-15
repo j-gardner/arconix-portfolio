@@ -4,7 +4,7 @@ Tags: arconix, portfolio, quicksand
 Donate link: http://arcnx.co/acpdonation
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 1.2
+Stable tag: 1.2.1
 
 Arconix Portfolio allows you to easily display your portfolio on your website.
 
@@ -57,6 +57,9 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 2. Creating a Portfolio Item
 
 == Changelog ==
+
+= 1.2.1 =
+* Fixed a bug in the taxonomy query that would prevent the portfolio items from displaying
 
 = 1.2.0 =
 * Prevent the associated html from loading if the taxonomy heading is blank
