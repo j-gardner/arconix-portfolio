@@ -1,3 +1,12 @@
+/* 
+ARCONIX PORTFOLIO CSS
+--------------------------
+
+PLEASE DO NOT make modifications to this file directly as it will be overwritten on update.
+Instead, save a copy of this file to your theme or child theme directory. It will then be
+loaded in place of the plugin's version and will maintain your changes on upgrade
+*/
+
 /* Feature Wrapper */
 .arconix-portfolio-features {
     border-bottom: 1px solid #ddd;
@@ -30,7 +39,7 @@
     color: #fff;
 }
 
-/* The actual word "Feature" to the left of the items */
+/* The Heading to the left of the items */
 .arconix-portfolio-category-title { 
     margin-left: 0;
     font-weight: bold;
