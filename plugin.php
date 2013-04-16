@@ -4,7 +4,7 @@
  * Plugin URI: http://arconixpc.com/plugins/arconix-portfolio
  * Description: Portfolio Gallery provides an easy way to display your portfolio on your website
  *
- * Version: 1.2.1
+ * Version: 1.2.2
  *
  * Author: John Gardner
  * Author URI: http://arconixpc.com
@@ -49,7 +49,7 @@ class Arconix_Portfolio {
      * @since  1.2.0
      */
     function constants() {
-        define( 'ACP_VERSION',          '1.2.1' );
+        define( 'ACP_VERSION',          '1.2.2' );
         define( 'ACP_URL',              trailingslashit( plugin_dir_url( __FILE__ ) ) );
         define( 'ACP_IMAGES_URL',       trailingslashit( ACP_URL . 'images' ) );
         define( 'ACP_INCLUDES_URL',     trailingslashit( ACP_URL . 'includes' ) );
@@ -299,7 +299,8 @@ class Arconix_Portfolio {
     *
     * @param array $args
     * @param bool $echo Determines whether the data is returned or echo'd
-    * @since  1.3
+    * @since  1.2.0
+    * @version 1.2.1
     *
     */
     function get_portfolio_data( $args, $echo = false ) {
@@ -475,11 +476,11 @@ class Arconix_Portfolio {
      * such as when building the styles or scripts into a single file, simply reference the filter and return false
      *
      * @since 0.9
-     * @version 1.2.0
+     * @version 1.2.2
      */
     function scripts() {
         // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
-        WP_DEBUG === true ? $prefix = '' : $prefix = '.min';
+        WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
 
         wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.3', true );
         wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
@@ -491,7 +492,7 @@ class Arconix_Portfolio {
             elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
                 wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
             else
-                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio' . $prefix . '.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
         }        
 
         // CSS
