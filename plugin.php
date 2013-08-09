@@ -519,10 +519,15 @@ class Arconix_Portfolio {
     /**
      * Adds a widget to the dashboard.
      *
+     * Can be removed entirely via a filter, but is visible by default for admins only
+     *
      * @since 0.9.1
+     * @version 1.3.0
      */
     function register_dashboard_widget() {
-        wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
+        if( apply_filters( 'pre_register_arconix_portfolio_dashboard_widget', true ) and 
+            apply_filters( 'arconix_portfolio_dashboard_widget_security', current_user_can( 'manage_options' ) ) )
+                wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
     }
 
     /**
