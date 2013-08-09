@@ -300,7 +300,7 @@ class Arconix_Portfolio {
     * @param array $args
     * @param bool $echo Determines whether the data is returned or echo'd
     * @since  1.2.0
-    * @version 1.2.1
+    * @version 1.3.0
     *
     */
     function get_portfolio_data( $args, $echo = false ) {
@@ -462,6 +462,8 @@ class Arconix_Portfolio {
             endwhile;
         }
         $return .= '</ul>';
+
+        $return = apply_filters( 'arconix_portfolio_return', $return );
 
     // Either echo or return the results
     if( $echo )
