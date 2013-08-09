@@ -156,7 +156,7 @@ class Arconix_Portfolio {
                 )
             ),
             'query' => array(
-                'link'              => 'image',
+                'link'              => '',
                 'thumb'             => 'portfolio-thumb',
                 'full'              => 'portfolio-large',
                 'title'             => 'above',
@@ -446,12 +446,13 @@ class Arconix_Portfolio {
             $return .= '<ul class="arconix-portfolio-grid">';
 
             while( $portfolio_query->have_posts() ) : $portfolio_query->the_post();
+                $p_id = get_the_ID();
 
                 // Get the terms list
-                $get_the_terms = get_the_terms( get_the_ID(), 'feature' );
+                $get_the_terms = get_the_terms( $p_id, 'feature' );                
 
                 // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
-                $return .= '<li data-id="id-' . get_the_ID() . '" data-type="';
+                $return .= '<li data-id="id-' . $p_id . '" data-type="';
                 
                 if( $get_the_terms ) {
                     foreach ( $get_the_terms as $term ) {
@@ -464,23 +465,82 @@ class Arconix_Portfolio {
                 // Above image Title output
                 if( $title == "above" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
 
-                // Handle the image link
-                switch( $link ) {
-                    case "page" :
-                        $return .= '<a href="' . get_permalink() . '" rel="bookmark">';                        
-                        $return .= get_the_post_thumbnail( get_the_ID(), $thumb );
-                        $return .= '</a>';
-                        break;
+                /**
+                 * As of v1.3.0, the destination of the link can be defined at the item level. In order to remain backwards compatible
+                 * we have to check if a shortcode parameter was set. If set, run through existing code, otherwise run through the new code
+                 */
+                
+                if( $link ) {
+                    switch( $link ) {
+                        case "page" :
+                            $return .= '<a class="page" href="' . get_permalink() . '" rel="bookmark">';                        
+                            $return .= get_the_post_thumbnail( $p_id, $thumb );
+                            $return .= '</a>';
+                            break;
 
-                    case "image" :
-                        $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                        $return .= '<a href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-                        $return .= get_the_post_thumbnail( get_the_ID(), $thumb );
-                        $return .= '</a>';
-                        break;
+                        case "image" :
+                        default :
+                            $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
+                            $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                            $return .= get_the_post_thumbnail( $p_id, $thumb );
+                            $return .= '</a>';
+                            break;
+                    }
+                }
+                else {
+                    // Grab the post meta
+                    $link_type = get_post_meta( $p_id, '_acp_link_type', true );
+                    $link_value = get_post_meta( $p_id, '_acp_link_value', true );
 
-                    default : // If it's anything else, return nothing.
-                        break;
+                    switch ( $link_type ) {
+                        case 'image' :
+                        default :
+                            $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
+                            $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                            $return .= get_the_post_thumbnail( $p_id, $thumb );
+                            $return .= '</a>';
+                            $return .= '<!-- link type = ' . $link_type . ' -->';
+                            break;
+
+                        case 'page' :
+                            $return .= '<a class="page" href="' . get_permalink() . '" rel="bookmark">';                        
+                            $return .= get_the_post_thumbnail( $p_id, $thumb );
+                            $return .= '</a>';
+                            $return .= '<!-- link type = ' . $link_type . ' -->';
+                            break;
+
+                        case 'youtube' :
+                            if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
+                                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
+                                $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                                $return .= get_the_post_thumbnail( $p_id, $thumb );
+                                $return .= '</a>';
+                                $return .= '<!-- video id missing -->';
+                            }
+                            else {
+                                $return .= '<a class="video" href="http://youtube.com/watch?v=' . $link_value . '">';
+                                $return .= get_the_post_thumbnail( $p_id, $thumb );
+                                $return .= '</a>';
+                                $return .= '<!-- link type = ' . $link_type . ' -->';
+                            }
+                            break;
+
+                        case 'vimeo' :
+                            if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
+                                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
+                                $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                                $return .= get_the_post_thumbnail( $p_id, $thumb );
+                                $return .= '</a>';
+                                $return .= '<!-- video id missing -->';
+                            }
+                            else {
+                                $return .= '<a class="video" href="http://vimeo.com/' . $link_value . '">';
+                                $return .= get_the_post_thumbnail( $p_id, $thumb );
+                                $return .= '</a>';
+                                $return .= '<!-- link type = ' . $link_type . ' -->';
+                            }
+                            break;
+                    }
                 }
 
                 // Below image Title output
