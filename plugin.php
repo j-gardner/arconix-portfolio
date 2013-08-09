@@ -32,9 +32,11 @@ class Arconix_Portfolio {
         add_action( 'admin_enqueue_scripts',            array( $this, 'admin_css' ) );
         add_action( 'right_now_content_table_end',      array( $this, 'right_now' ) );
         add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );
+        add_action( 'init',                             'arconix_portfolio_init_meta_boxes', 99 );
 
         add_filter( 'manage_portfolio_posts_columns',   array( $this, 'columns_filter' ) );
         add_filter( 'post_updated_messages',            array( $this, 'updated_messages' ) );
+        add_filter( 'cmb_meta_boxes',                   array( $this, 'metaboxes' ) );
         add_filter( 'widget_text',                      'do_shortcode' );
 
         add_image_size( 'portfolio-thumb',              275, 200 );
@@ -171,6 +173,47 @@ class Arconix_Portfolio {
         );
 
         return apply_filters( 'arconix_portfolio_defaults', $defaults );
+    }
+
+    /**
+     * Create the post type metabox
+     *
+     * @param array $meta_boxes
+     * @return array $meta_boxes
+     * @since 1.3.0
+     */
+    function metaboxes( $meta_boxes ) {
+        $metabox = array(
+            'id'            => 'portfolio-setting',
+            'title'         => __( 'Portfolio Setting', 'acp' ),
+            'pages'         => array( 'portfolio' ),
+            'context'       => 'side',
+            'priority'      => 'default',
+            'show_names'    => false,
+            'fields'        => array(
+                array(
+                    'id'        => '_acp_link_type',
+                    'name'      => __( 'Select Link Type', 'acp' ),
+                    'type'      => 'select',
+                    'options'   => array(
+                        array( 'name' => 'Image',           'value' => 'image'),
+                        array( 'name' => 'Page',            'value' => 'page'),
+                        array( 'name' => 'Youtube Video',   'value' => 'youtube' ),
+                        array( 'name' => 'Vimeo Video',     'value' => 'vimeo' )
+                    )
+                ),
+                array(
+                    'id'    => '_acp_link_value',
+                    'name'  => __( 'Optional Link', 'acp' ),
+                    'desc'  => __( 'If selected, enter the video ID of the YouTube or Vimeo video', 'acp' ),
+                    'type'  => 'text_small'
+                )
+            )
+        );
+
+        $meta_boxes[] = $metabox;
+
+        return $meta_boxes;
     }
 
     /**
@@ -552,6 +595,11 @@ class Arconix_Portfolio {
     function right_now() {
         include_once( ACP_VIEWS_DIR . 'right-now.php' );
     }
+}
+
+function arconix_portfolio_init_meta_boxes() {
+    if( ! class_exists( 'cmb_Meta_Box' ) )
+        require_once( plugin_dir_path( __FILE__ ) . '/includes/metabox/init.php' );
 }
 
 new Arconix_Portfolio;
