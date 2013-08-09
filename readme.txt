@@ -57,6 +57,10 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 2. Creating a Portfolio Item
 
 == Changelog ==
+= 1.3.0 =
+* Portfolio items can now be individually configured to link to an Image, Page, YouTube or Vimeo video. See the FAQ or documentation for more details
+* Added a filter to the return content for the portfolio data for additional developer flexibility
+
 = 1.2.2 =
 * Minified javascript support removed from arconix-portfolio.js until a better solution can be implemented 
 
