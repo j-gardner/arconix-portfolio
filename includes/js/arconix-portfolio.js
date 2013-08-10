@@ -54,11 +54,11 @@ jQuery(document).ready(function(){
             $container.quicksand($filteredItems, 
             {
                 // The Duration for animation
-                duration: 750,
+                duration: 500,
                 // the easing effect when animation
                 easing: 'easeInOutQuad',
                 // height adjustment becomes dynamic
-                adjustHeight: 'dynamic' 
+                adjustHeight: 'dynamic'
             });
 			
             //Initalize our PrettyPhoto Script When Filtered
