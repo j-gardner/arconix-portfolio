@@ -211,7 +211,7 @@ class Arconix_Portfolio {
             )
         );
 
-        $meta_boxes[] = $metabox;
+        $meta_boxes[] = apply_filters( 'arconix_portfolio_metabox', $metabox );
 
         return $meta_boxes;
     }
