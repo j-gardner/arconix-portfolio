@@ -195,18 +195,19 @@ class Arconix_Portfolio {
                     'id'        => '_acp_link_type',
                     'name'      => __( 'Select Link Type', 'acp' ),
                     'type'      => 'select',
+                    'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
                     'options'   => array(
                         array( 'name' => 'Image',           'value' => 'image'),
                         array( 'name' => 'Page',            'value' => 'page'),
-                        array( 'name' => 'Youtube Video',   'value' => 'youtube' ),
+                        array( 'name' => 'YouTube Video',   'value' => 'youtube' ),
                         array( 'name' => 'Vimeo Video',     'value' => 'vimeo' )
                     )
                 ),
                 array(
-                    'id'    => '_acp_link_value',
-                    'name'  => __( 'Optional Link', 'acp' ),
-                    'desc'  => __( 'If selected, enter the video ID of the YouTube or Vimeo video', 'acp' ),
-                    'type'  => 'text_small'
+                    'id'        => '_acp_link_value',
+                    'name'      => __( 'Optional Link', 'acp' ),
+                    'desc'      => __( 'If selected, enter the video ID of the YouTube or Vimeo video', 'acp' ),
+                    'type'      => 'text_medium'
                 )
             )
         );
