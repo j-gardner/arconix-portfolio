@@ -206,7 +206,7 @@ class Arconix_Portfolio {
                 array(
                     'id'        => '_acp_link_value',
                     'name'      => __( 'Optional Link', 'acp' ),
-                    'desc'      => __( 'If selected, enter the video ID of the YouTube or Vimeo video', 'acp' ),
+                    'desc'      => __( 'If selected, enter the video ID of the YouTube/Vimeo video', 'acp' ),
                     'type'      => 'text_medium'
                 )
             )
@@ -264,6 +264,7 @@ class Arconix_Portfolio {
             'title' => __( 'Title', 'acp' ),
             'portfolio_description' => __( 'Description', 'acp' ),
             'portfolio_features' => __( 'Features', 'acp' ),
+            'portfolio_link' => __( 'Link Type', 'acp' ),
             'date' => __( 'Date', 'acp' )
         );
 
@@ -290,6 +291,9 @@ class Arconix_Portfolio {
                 break;
             case "portfolio_features":
                 echo get_the_term_list( $post->ID, 'feature', '', ', ', '' );
+                break;
+            case "portfolio_link":
+                get_post_meta( $post->ID, '_acp_link_type', true );
                 break;
         }
     }
