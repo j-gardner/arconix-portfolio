@@ -200,13 +200,14 @@ class Arconix_Portfolio {
                         array( 'name' => 'Image',           'value' => 'image'),
                         array( 'name' => 'Page',            'value' => 'page'),
                         array( 'name' => 'YouTube Video',   'value' => 'youtube' ),
-                        array( 'name' => 'Vimeo Video',     'value' => 'vimeo' )
+                        array( 'name' => 'Vimeo Video',     'value' => 'vimeo' ),
+                        array( 'name' => 'External Link',   'value' => 'external' )
                     )
                 ),
                 array(
                     'id'        => '_acp_link_value',
                     'name'      => __( 'Optional Link', 'acp' ),
-                    'desc'      => __( 'If selected, enter the video ID of the YouTube/Vimeo video', 'acp' ),
+                    'desc'      => __( 'If selected, enter the video ID of the YouTube/Vimeo video or the URL of the hyperlink', 'acp' ),
                     'type'      => 'text_medium'
                 )
             )
@@ -322,7 +323,7 @@ class Arconix_Portfolio {
      * @version 1.2.0
      */
     function acp_portfolio_shortcode( $atts, $content = null ) {
-        wp_enqueue_script( 'arconix-portfolio-js' );
+        if( wp_script_is( 'arconix-portfolio-js', 'registered' ) ) wp_enqueue_script( 'arconix-portfolio-js' );
         return $this->get_portfolio_data( $atts );
     }
 
@@ -433,12 +434,12 @@ class Arconix_Portfolio {
                 if( $heading)
                     $display_list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
 
-                $display_list .= '<li class="active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
+                $display_list .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
 
                 // Break each of the items into individual elements and modify the output
                 $term_list = '';        
                 foreach( $get_terms as $term ) {
-                    $term_list .= '<li><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
+                    $term_list .= '<li class"arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
                 }
 
                 // Return our modified list
@@ -501,14 +502,14 @@ class Arconix_Portfolio {
                         case 'image' :
                         default :
                             $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                            $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                            $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
                             $return .= get_the_post_thumbnail( $p_id, $thumb );
                             $return .= '</a>';
                             $return .= '<!-- link type = ' . $link_type . ' -->';
                             break;
 
                         case 'page' :
-                            $return .= '<a class="page" href="' . get_permalink() . '" rel="bookmark">';                        
+                            $return .= '<a class="portfolio-page" href="' . get_permalink() . '" rel="bookmark">';                        
                             $return .= get_the_post_thumbnail( $p_id, $thumb );
                             $return .= '</a>';
                             $return .= '<!-- link type = ' . $link_type . ' -->';
@@ -517,13 +518,13 @@ class Arconix_Portfolio {
                         case 'youtube' :
                             if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
                                 $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                                $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                                $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
                                 $return .= get_the_post_thumbnail( $p_id, $thumb );
                                 $return .= '</a>';
                                 $return .= '<!-- video id missing -->';
                             }
                             else {
-                                $return .= '<a class="video" href="http://youtube.com/watch?v=' . $link_value . '">';
+                                $return .= '<a class="portfolio-video" href="http://youtube.com/watch?v=' . $link_value . '">';
                                 $return .= get_the_post_thumbnail( $p_id, $thumb );
                                 $return .= '</a>';
                                 $return .= '<!-- link type = ' . $link_type . ' -->';
@@ -533,18 +534,33 @@ class Arconix_Portfolio {
                         case 'vimeo' :
                             if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
                                 $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                                $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                                $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
                                 $return .= get_the_post_thumbnail( $p_id, $thumb );
                                 $return .= '</a>';
                                 $return .= '<!-- video id missing -->';
                             }
                             else {
-                                $return .= '<a class="video" href="http://vimeo.com/' . $link_value . '">';
+                                $return .= '<a class="portfolio-video" href="http://vimeo.com/' . $link_value . '">';
                                 $return .= get_the_post_thumbnail( $p_id, $thumb );
                                 $return .= '</a>';
                                 $return .= '<!-- link type = ' . $link_type . ' -->';
                             }
                             break;
+
+                        case 'external' :
+                            if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
+                                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
+                                $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                                $return .= get_the_post_thumbnail( $p_id, $thumb );
+                                $return .= '</a>';
+                                $return .= '<!-- link missing -->';
+                            }
+                            else {
+                                $return .= '<a class="portfolio-external" href="' . esc_url( $link_value ) . '">';
+                                $return .= get_the_post_thumbnail( $p_id, $thumb );
+                                $return .= '</a>';
+                                $return .= '<!-- link type = ' . $link_type . ' -->';
+                            }
                     }
                 }
 
