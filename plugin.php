@@ -426,7 +426,7 @@ class Arconix_Portfolio {
             // Get the tax terms only from the items in our query
             $get_terms = get_terms( 'feature', $a );        
             
-            // If there are multiple terms in use, then run through our display list
+            // If there are multiple terms in use, then create our filter list
             if( count( $get_terms ) > 1 )  {
                 $display_list = '<ul class="arconix-portfolio-features">';
                 
