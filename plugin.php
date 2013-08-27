@@ -601,6 +601,8 @@ class Arconix_Portfolio {
      * allowing for an easy way to override the default template. If you'd like to remove the CSS or JS entirely,
      * such as when building the styles or scripts into a single file, simply reference the filter and return false
      *
+     * @example add_filter( 'pre_register_arconix_portfolio_js', '__return_false' );
+     *
      * @since 0.9
      * @version 1.2.2
      */
