@@ -206,7 +206,7 @@ class Arconix_Portfolio {
                     'id'        => '_acp_link_value',
                     'name'      => __( 'Optional Link', 'acp' ),
                     'desc'      => __( 'If selected, enter the destination hyperlink', 'acp' ),
-                    'type'      => 'text_medium'
+                    'type'      => 'text'
                 )
             )
         );
@@ -523,7 +523,7 @@ class Arconix_Portfolio {
                             }
                             else {
                                 $extra_class = '';
-                                $extra_class = apply_filters( 'arconix_portfolio_link_class', $extra_class );
+                                $extra_class = apply_filters( 'arconix_portfolio_external_link_class', $extra_class );
                                 $return .= '<a class="portfolio-external '. $extra_class . '" href="' . esc_url( $link_value ) . '">';
                                 $return .= get_the_post_thumbnail( $p_id, $thumb );
                                 $return .= '</a>';
