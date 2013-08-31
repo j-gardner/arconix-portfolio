@@ -4,7 +4,7 @@ Tags: arconix, portfolio, quicksand
 Donate link: http://arcnx.co/acpdonation
 Requires at least: 3.4
 Tested up to: 3.5.1
-Stable tag: 1.2.2
+Stable tag: 1.3.0
 
 Arconix Portfolio allows you to easily display your portfolio on your website.
 
@@ -58,7 +58,8 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 
 == Changelog ==
 = 1.3.0 =
-* Portfolio items can now be individually configured to link to an Image, Page, YouTube or Vimeo video. See the FAQ or documentation for more details
+* Portfolio items can now be individually configured to link to an Image, Page, or External Link. See the documentation for more details
+* Adding a security check on the dashboard widget (filterable) so it only loads for admins
 * Added a filter to the return content for the portfolio data for additional developer flexibility
 
 = 1.2.2 =
