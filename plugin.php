@@ -197,17 +197,15 @@ class Arconix_Portfolio {
                     'type'      => 'select',
                     'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
                     'options'   => array(
-                        array( 'name' => 'Image',           'value' => 'image'),
-                        array( 'name' => 'Page',            'value' => 'page'),
-                        array( 'name' => 'YouTube Video',   'value' => 'youtube' ),
-                        array( 'name' => 'Vimeo Video',     'value' => 'vimeo' ),
+                        array( 'name' => 'Image',           'value' => 'image' ),
+                        array( 'name' => 'Page',            'value' => 'page' ),
                         array( 'name' => 'External Link',   'value' => 'external' )
                     )
                 ),
                 array(
                     'id'        => '_acp_link_value',
                     'name'      => __( 'Optional Link', 'acp' ),
-                    'desc'      => __( 'If selected, enter the video ID of the YouTube/Vimeo video or the URL of the hyperlink', 'acp' ),
+                    'desc'      => __( 'If selected, enter the destination hyperlink', 'acp' ),
                     'type'      => 'text_medium'
                 )
             )
@@ -473,7 +471,7 @@ class Arconix_Portfolio {
 
                 /**
                  * As of v1.3.0, the destination of the link can be defined at the item level. In order to remain backwards compatible
-                 * we have to check if a shortcode parameter was set. If set, run through existing code, otherwise run through the new code
+                 * we have to check if a shortcode parameter was set. If a shortcode param was set, that takes precedence
                  */
                 
                 if( $link ) {
@@ -515,38 +513,6 @@ class Arconix_Portfolio {
                             $return .= '<!-- link type = ' . $link_type . ' -->';
                             break;
 
-                        case 'youtube' :
-                            if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
-                                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                                $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-                                $return .= get_the_post_thumbnail( $p_id, $thumb );
-                                $return .= '</a>';
-                                $return .= '<!-- video id missing -->';
-                            }
-                            else {
-                                $return .= '<a class="portfolio-video" href="http://youtube.com/watch?v=' . $link_value . '">';
-                                $return .= get_the_post_thumbnail( $p_id, $thumb );
-                                $return .= '</a>';
-                                $return .= '<!-- link type = ' . $link_type . ' -->';
-                            }
-                            break;
-
-                        case 'vimeo' :
-                            if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
-                                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                                $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-                                $return .= get_the_post_thumbnail( $p_id, $thumb );
-                                $return .= '</a>';
-                                $return .= '<!-- video id missing -->';
-                            }
-                            else {
-                                $return .= '<a class="portfolio-video" href="http://vimeo.com/' . $link_value . '">';
-                                $return .= get_the_post_thumbnail( $p_id, $thumb );
-                                $return .= '</a>';
-                                $return .= '<!-- link type = ' . $link_type . ' -->';
-                            }
-                            break;
-
                         case 'external' :
                             if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
                                 $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
@@ -556,7 +522,9 @@ class Arconix_Portfolio {
                                 $return .= '<!-- link missing -->';
                             }
                             else {
-                                $return .= '<a class="portfolio-external" href="' . esc_url( $link_value ) . '">';
+                                $extra_class = '';
+                                $extra_class = apply_filters( 'arconix_portfolio_link_class', $extra_class );
+                                $return .= '<a class="portfolio-external '. $extra_class . '" href="' . esc_url( $link_value ) . '">';
                                 $return .= get_the_post_thumbnail( $p_id, $thumb );
                                 $return .= '</a>';
                                 $return .= '<!-- link type = ' . $link_type . ' -->';
