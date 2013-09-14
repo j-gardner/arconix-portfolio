@@ -1,5 +1,6 @@
 === Arconix Portfolio ===
 Contributors: jgardner03
+Donate link: http://arcnx.co/acpdonation
 Tags: arconix, portfolio, quicksand
 Donate link: http://arcnx.co/acpdonation
 Requires at least: 3.4
