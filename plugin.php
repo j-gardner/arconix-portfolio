@@ -437,7 +437,7 @@ class Arconix_Portfolio {
                 // Break each of the items into individual elements and modify the output
                 $term_list = '';        
                 foreach( $get_terms as $term ) {
-                    $term_list .= '<li class"arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
+                    $term_list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
                 }
 
                 // Return our modified list
