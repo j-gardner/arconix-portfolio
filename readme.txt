@@ -62,7 +62,7 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 Resolves a conflict with themes from WooThemes that prevented users from inserting media into the editor
 
 = 1.3.1 =
- Fix a validation bug
+ Fix HTML validation bug
 
 = 1.3.0 =
 * Portfolio items can now be individually configured to link to an Image, Page, or External Link. See the documentation for more details
