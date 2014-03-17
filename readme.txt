@@ -32,7 +32,7 @@ With this plugin you can easily showcase your portfolio on your WordPress websit
 
 = How do I display my created portfolio items =
 
-Create a WordPress Page and use the `[portfolio]` shortcode. See the [Documentation](http://http;//arcnx.co/apwiki) for more details and available options
+Create a WordPress Page and use the `[portfolio]` shortcode. See the [Documentation](http://arcnx.co/apwiki) for more details and available options
 
 = Where can I find more information on how to use the plugin?  =
 
