@@ -18,7 +18,9 @@ class Arconix_Portfolio {
         add_action( 'wp_enqueue_scripts',               array( $this, 'scripts' ) );
         add_action( 'admin_enqueue_scripts',            array( $this, 'admin_css' ) );
         add_action( 'dashboard_glance_items',           array( $this, 'at_a_glance' ) );
-        add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );        
+        add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );
+
+        add_action( 'arconix_portfolio_display_list',   array( $this, 'portfolio_terms_list' ), 10, 2 );
 
         add_filter( 'manage_portfolio_posts_columns',   array( $this, 'columns_filter' ) );
         add_filter( 'post_updated_messages',            array( $this, 'updated_messages' ) );
@@ -420,7 +422,7 @@ class Arconix_Portfolio {
      */
     function acp_portfolio_shortcode( $atts, $content = null ) {
         if( wp_script_is( 'arconix-portfolio-js', 'registered' ) ) wp_enqueue_script( 'arconix-portfolio-js' );
-        
+
         return $this->get_portfolio_data( $atts );
     }
 
@@ -491,13 +493,13 @@ class Arconix_Portfolio {
         $return = ''; // Var that will be concatenated with our portfolio data
 
         // Create a new query based on our own arguments
-        $portfolio_query = new WP_Query( $args );
+        $pq = new WP_Query( $args );
 
-        if( $portfolio_query->have_posts() ) {
+        if( $pq->have_posts() ) {
             
             $a = array(); // Var to hold our operate arguments
             
-            if( $terms ) {            
+            if( $terms ) {
                 // Translate our user-entered slug into an id we can use
                 $termid = get_term_by( 'slug', $terms, $default_args['taxonomy']['slug'] );
                 $termid = $termid->term_id;
@@ -523,33 +525,19 @@ class Arconix_Portfolio {
             $a = apply_filters( 'arconix_portfolio_get_terms', $a );
 
             // Get the tax terms only from the items in our query
-            $get_terms = get_terms( 'feature', $a );        
+            $get_terms = get_terms( 'feature', $a );
+
+            /**
+             * This action hook powers the Filter list display that is output above the portfolio grid
+             * It accepts the term results of teh query and the heading, which is output in front of the
+             * terms (default is `Display`)
+             */
+            $return .= do_action( 'arconix_portfolio_display_list', $get_terms, $heading );
+
             
-            // If there are multiple terms in use, then create our filter list
-            if( count( $get_terms ) > 1 )  {
-                $display_list = '<ul class="arconix-portfolio-features">';
-                
-                if( $heading)
-                    $display_list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
-
-                $display_list .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
-
-                // Break each of the items into individual elements and modify the output
-                $term_list = '';        
-                foreach( $get_terms as $term ) {
-                    $term_list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
-                }
-
-                // Return our modified list
-                $display_list .= $term_list . '</ul>';
-
-                // Allow users to filter how the 'features' are displayed
-                $return .= apply_filters( 'arconix_portfolio_display_list', $display_list );
-            }
-
             $return .= '<ul class="arconix-portfolio-grid">';
 
-            while( $portfolio_query->have_posts() ) : $portfolio_query->the_post();
+            while( $pq->have_posts() ) : $pq->the_post();
                 $p_id = get_the_ID();
 
                 // Get the terms list
@@ -662,6 +650,39 @@ class Arconix_Portfolio {
         echo $return;
     else
         return $return;
+    }
+
+    /**
+     * Displays the terms above the portfolio grid
+     * 
+     * @param  [type] $get_terms list of "features" applied to each portfolio item as set by the user
+     * @param  string $heading   is output before the terms and is set at the shortcode level
+     * @return string $list      contains the unordered list of items available to filter
+     * @since  2.0.0
+     */
+    function portfolio_terms_list( $get_terms, $heading ) {
+        // If there aren't multiple terms in use, return early
+        if( ! count( $get_terms ) > 1 ) 
+            return;
+
+        $list = '<ul class="arconix-portfolio-features">';
+        
+        if( $heading )
+            $list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
+
+        $list .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
+
+        // Break each of the items into individual elements and modify the output
+        $term_list = '';        
+        foreach( $get_terms as $term ) {
+            $term_list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
+        }
+
+        // Return our modified list
+        $list .= $term_list . '</ul>';
+
+        return $list;
+
     }
 
     
