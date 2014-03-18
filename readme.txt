@@ -2,9 +2,8 @@
 Contributors: jgardner03
 Donate link: http://arcnx.co/acpdonation
 Tags: arconix, portfolio, quicksand
-Donate link: http://arcnx.co/acpdonation
-Requires at least: 3.4
-Tested up to: 3.6
+Requires at least: 3.8
+Tested up to: 3.9
 Stable tag: 1.3.2
 
 Arconix Portfolio allows you to easily display your portfolio on your website.
