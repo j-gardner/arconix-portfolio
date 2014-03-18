@@ -20,8 +20,6 @@ class Arconix_Portfolio {
         add_action( 'dashboard_glance_items',           array( $this, 'at_a_glance' ) );
         add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );
 
-        add_action( 'arconix_portfolio_display_list',   array( $this, 'portfolio_terms_list' ), 10, 2 );
-
         add_filter( 'manage_portfolio_posts_columns',   array( $this, 'columns_filter' ) );
         add_filter( 'post_updated_messages',            array( $this, 'updated_messages' ) );
         add_filter( 'cmb_meta_boxes',                   array( $this, 'metaboxes' ) );
@@ -165,10 +163,10 @@ class Arconix_Portfolio {
                 'orderby'           => 'date',
                 'order'             => 'desc',
                 'posts_per_page'    => -1,
-                'terms'             => '',
-                'operator'          => 'IN',
                 'terms_orderby'     => 'name',
-                'terms_order'       => 'ASC'
+                'terms_order'       => 'ASC',
+                'terms'             => '',
+                'operator'          => 'IN'
             )
         );
 
@@ -458,50 +456,52 @@ class Arconix_Portfolio {
 
         // Merge incoming args with the function defaults and then extract them into variables
         $args = wp_parse_args( $args, $defaults );
-        extract( $args );
+        //extract( $args );
 
-        if( $title != "below" ) $title == "above"; // For backwards compatibility with "yes" and built-in data check
+        if( $args['title'] != "below" ) $args['title'] == "above"; // For backwards compatibility with "yes" and built-in data check
 
         // Default Query arguments
-        $args = array(
+        $qargs = array(
             'post_type' => 'portfolio',
-            'meta_key' => '_thumbnail_id', // Should pull only items with featured images
-            'posts_per_page' => $posts_per_page,
-            'orderby' => $orderby,
-            'order' => $order,
+            'meta_key' => '_thumbnail_id', // Pull only items with featured images
+            'posts_per_page' => $args['posts_per_page'],
+            'orderby' => $args['orderby'],
+            'order' => $args['order'],
         );
 
         // If the user has defined any tax terms, then we create our tax_query and merge to our main query
-        if( $terms ) {
-            $tax_query_args = apply_filters( 'arconix_portfolio_tax_query_args', 
-                array(
-                    'tax_query' => array(
-                        array(
-                            'taxonomy' => $default_args['taxonomy']['slug'],
-                            'field' => 'slug',
-                            'terms' => $terms,
-                            'operator' => $operator
-                        )
+        if( $qargs['terms'] ) {
+            $tax_qargs = array( 
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => 'feature',
+                        'field' => 'slug',
+                        'terms' => $args['terms'],
+                        'operator' => $args['operator']
                     )
                 )
             );
             
-            // Join the tax array to the general query
-            $args = array_merge( $args, $tax_query_args );
+            // Merge the tax array with the general query
+            $qargs = array_merge( $qargs, $tax_qargs );
         }
 
         $return = ''; // Var that will be concatenated with our portfolio data
 
-        // Create a new query based on our own arguments
-        $pq = new WP_Query( $args );
+        // Create a new query based on our own arguments (available to be filtered)
+        $query = new WP_Query( apply_filters( 'arconix_portfolio_query', $qargs ) );
 
-        if( $pq->have_posts() ) {
+        if( $query->have_posts() ) {
+
+            //
+            //arconix_portfolio_before_items( $args );
+            //
             
             $a = array(); // Var to hold our operate arguments
             
             if( $terms ) {
                 // Translate our user-entered slug into an id we can use
-                $termid = get_term_by( 'slug', $terms, $default_args['taxonomy']['slug'] );
+                $termid = get_term_by( 'slug', $terms, 'feature' );
                 $termid = $termid->term_id;
                 
                 // Change the get_terms argument based on the shortcode $operator, but default to IN
@@ -527,17 +527,37 @@ class Arconix_Portfolio {
             // Get the tax terms only from the items in our query
             $get_terms = get_terms( 'feature', $a );
 
-            /**
-             * This action hook powers the Filter list display that is output above the portfolio grid
-             * It accepts the term results of teh query and the heading, which is output in front of the
-             * terms (default is `Display`)
-             */
-            $return .= do_action( 'arconix_portfolio_display_list', $get_terms, $heading );
+            // If there aren't multiple terms in use, return early
+            if( count( $get_terms ) > 1 ) {
 
-            
+                $list = '<ul class="arconix-portfolio-features">';
+                
+                if( $heading )
+                    $list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
+
+                $list .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
+
+                // Break each of the items into individual elements and modify the output
+                $term_list = '';        
+                foreach( $get_terms as $term ) {
+                    $term_list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
+                }
+
+                // Return our modified list
+                $list .= $term_list . '</ul>';
+
+                $return .= $list;
+
+            }
+
             $return .= '<ul class="arconix-portfolio-grid">';
 
-            while( $pq->have_posts() ) : $pq->the_post();
+            while( $query->have_posts() ) : $query->the_post();
+
+                //
+                //arconix_portfolio_item( $args );
+                //
+                
                 $p_id = get_the_ID();
 
                 // Get the terms list
@@ -640,7 +660,12 @@ class Arconix_Portfolio {
                 $return .= '</li>';
 
             endwhile;
-        }
+        } // End if have post
+
+        //
+        //arconix_portfolio_after_items( $args );
+        //
+
         $return .= '</ul>';
 
         $return = apply_filters( 'arconix_portfolio_return', $return );
@@ -655,12 +680,12 @@ class Arconix_Portfolio {
     /**
      * Displays the terms above the portfolio grid
      * 
-     * @param  [type] $get_terms list of "features" applied to each portfolio item as set by the user
+     * @param  array  $get_terms list of "features" applied to each portfolio item as set by the user
      * @param  string $heading   is output before the terms and is set at the shortcode level
      * @return string $list      contains the unordered list of items available to filter
      * @since  2.0.0
      */
-    function portfolio_terms_list( $get_terms, $heading ) {
+    function portfolio_terms_list( $args ) {
         // If there aren't multiple terms in use, return early
         if( ! count( $get_terms ) > 1 ) 
             return;
@@ -685,5 +710,5 @@ class Arconix_Portfolio {
 
     }
 
-    
+    //function arconix_portfolio_
 }
