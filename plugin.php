@@ -17,19 +17,5 @@
 // Include our class
 include_once( plugin_dir_path( __FILE__ ) . '/includes/class-portfolio.php' );
 
-/**
- * Init function instantiates the MetaBox and Dashboard At a Glance classes
- * @return void
- *
- * @since  0.9.0
- * @version  1.4.0
- */
-function arconix_portfolio_init() {
-    if ( ! class_exists( 'cmb_Meta_Box' ) )
-        require_once( plugin_dir_path( __FILE__ ) . '/includes/metabox/init.php' );
-
-    if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
-        require_once( plugin_dir_path( __FILE__ ) . '/includes/class-gamajo-dashboard-glancer.php');
-}
 
 new Arconix_Portfolio;

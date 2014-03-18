@@ -12,13 +12,13 @@ class Arconix_Portfolio {
         register_deactivation_hook( __FILE__,           array( $this, 'deactivation' ) );
 
         add_action( 'init',                             array( $this, 'content_types' ) );
+        add_action( 'init',                             array( $this, 'init' ), 9999 );
         add_action( 'after_setup_theme',                array( $this, 'post_thumbnail_support' ), 9999 );
         add_action( 'manage_posts_custom_column',       array( $this, 'columns_data' ) );
         add_action( 'wp_enqueue_scripts',               array( $this, 'scripts' ) );
         add_action( 'admin_enqueue_scripts',            array( $this, 'admin_css' ) );
         add_action( 'dashboard_glance_items',           array( $this, 'at_a_glance' ) );
-        add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );
-        add_action( 'init',                             'arconix_portfolio_init', 9999 );
+        add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );        
 
         add_filter( 'manage_portfolio_posts_columns',   array( $this, 'columns_filter' ) );
         add_filter( 'post_updated_messages',            array( $this, 'updated_messages' ) );
@@ -74,6 +74,21 @@ class Arconix_Portfolio {
         $defaults = $this->portfolio_defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
+
+        
+    }
+
+    /**
+     * Load our Meta Box and WP3.8 Dashboard classes
+     * 
+     * @since  2.0.0
+     */
+    function init() {
+        if ( ! class_exists( 'cmb_Meta_Box' ) )
+            require_once( ACP_DIR . '/metabox/init.php' );
+
+        if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
+            require_once( ACP_DIR . 'class-gamajo-dashboard-glancer.php' );
     }
 
     /**
@@ -296,6 +311,106 @@ class Arconix_Portfolio {
     }
 
     /**
+     * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
+     * allowing for an easy way to override the default template. If you'd like to remove the CSS or JS entirely,
+     * such as when building the styles or scripts into a single file, simply reference the filter and return false
+     *
+     * @example add_filter( 'pre_register_arconix_portfolio_js', '__return_false' );
+     *
+     * @since 0.9
+     * @version 2.0.0
+     */
+    function scripts() {
+        // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
+        WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
+
+        wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
+        wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
+
+        // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load in the correct order
+        if( apply_filters( 'pre_register_arconix_portfolio_js', true ) ) {
+            if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.js' ) )
+                wp_register_script( 'arconix-portfolio-js', get_stylesheet_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+            elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
+                wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+            else
+                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+        }        
+
+        // CSS
+        if( apply_filters( 'pre_register_arconix_portfolio_css', true ) ) {
+            if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
+                wp_enqueue_style( 'arconix-portfolio', get_stylesheet_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
+            elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
+                wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
+            else
+                wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'arconix-portfolio.css', false, ACP_VERSION );
+        }
+        
+    }
+
+    /**
+     * Includes admin css
+     *
+     * @since  1.2.0
+     */
+    function admin_css() {
+        wp_enqueue_style( 'arconix-portfolio-admin', ACP_CSS_URL . 'admin.css', false, ACP_VERSION );
+    }
+
+    /**
+     * Adds a widget to the dashboard.
+     *
+     * Can be removed entirely via a filter, but is visible by default for admins only
+     *
+     * @since 0.9.1
+     * @version 1.3.0
+     */
+    function register_dashboard_widget() {
+        if( apply_filters( 'pre_register_arconix_portfolio_dashboard_widget', true ) and 
+            apply_filters( 'arconix_portfolio_dashboard_widget_security', current_user_can( 'manage_options' ) ) )
+                wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
+    }
+
+    /**
+     * Output for the dashboard widget
+     *
+     * @since 0.9.1
+     * @version 1.4.0
+     */
+    function dashboard_widget_output() {
+        echo '<div class="rss-widget">';
+
+        wp_widget_rss_output( array(
+          'url'       => 'http://arconixpc.com/tag/arconix-portfolio/feed', // feed url
+          'title'     => 'Arconix Portfolio Posts', // feed title
+          'items'     => 3, //how many posts to show
+          'show_summary'  => 1, // display excerpt
+          'show_author'   => 0, // display author
+          'show_date'   => 1 // display post date
+        ) );
+
+        echo '<div class="acp-widget-bottom"><ul>';
+        ?>
+        <li><a href="http://arcnx.co/apwiki"><img src="<?php echo ACP_IMAGES_URL . 'page-16x16.png'?>">Documentation</a></li>
+        <li><a href="http://arcnx.co/aphelp"><img src="<?php echo ACP_IMAGES_URL . 'help-16x16.png'?>">Support Forum</a></li>
+        <li><a href="http://arcnx.co/aptrello"><img src="<?php echo ACP_IMAGES_URL . 'trello-16x16.png'?>">Dev Board</a></li>
+        <li><a href="http://arcnx.co/apsource"><img src="<?php echo ACP_IMAGES_URL . 'github-16x16.png'?>">Source Code</a></li>
+        <?php
+        echo '</ul></div></div>';
+    }
+
+    /**
+     * Add the Portfolio post type and Feature taxonomy to the WP 3.8 "At a Glance" dashboard
+     *
+     * @since  1.4.0
+     */
+    function at_a_glance() {
+        $glancer = new Gamajo_Dashboard_Glancer;
+        $glancer->add( 'portfolio' );
+    }
+
+    /**
      * Portfolio Shortcode
      *
      * @param array $atts
@@ -305,6 +420,7 @@ class Arconix_Portfolio {
      */
     function acp_portfolio_shortcode( $atts, $content = null ) {
         if( wp_script_is( 'arconix-portfolio-js', 'registered' ) ) wp_enqueue_script( 'arconix-portfolio-js' );
+        
         return $this->get_portfolio_data( $atts );
     }
 
@@ -330,10 +446,11 @@ class Arconix_Portfolio {
     * @param array $args
     * @param bool $echo Determines whether the data is returned or echo'd
     * @since  1.2.0
-    * @version 1.3.0
+    * @version 2.0.0
     *
     */
     function get_portfolio_data( $args, $echo = false ) {
+        // Get our default arguments
         $default_args = $this->portfolio_defaults();
         $defaults = $default_args['query'];
 
@@ -547,103 +664,5 @@ class Arconix_Portfolio {
         return $return;
     }
 
-    /**
-     * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
-     * allowing for an easy way to override the default template. If you'd like to remove the CSS or JS entirely,
-     * such as when building the styles or scripts into a single file, simply reference the filter and return false
-     *
-     * @example add_filter( 'pre_register_arconix_portfolio_js', '__return_false' );
-     *
-     * @since 0.9
-     * @version 1.2.2
-     */
-    function scripts() {
-        // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
-        WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
-
-        wp_register_script( 'jquery-quicksand', ACP_JS_URL . 'jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.3', true );
-        wp_register_script( 'jquery-easing', ACP_JS_URL . 'jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
-
-        // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load in the correct order
-        if( apply_filters( 'pre_register_arconix_portfolio_js', true ) ) {
-            if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.js' ) )
-                wp_register_script( 'arconix-portfolio-js', get_stylesheet_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
-            elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
-                wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
-            else
-                wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
-        }        
-
-        // CSS
-        if( apply_filters( 'pre_register_arconix_portfolio_css', true ) ) {
-            if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
-                wp_enqueue_style( 'arconix-portfolio', get_stylesheet_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
-            elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
-                wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
-            else
-                wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'arconix-portfolio.css', false, ACP_VERSION );
-        }
-        
-    }
-
-    /**
-     * Includes admin css
-     *
-     * @since  1.2.0
-     */
-    function admin_css() {
-        wp_enqueue_style( 'arconix-portfolio-admin', ACP_CSS_URL . 'admin.css', false, ACP_VERSION );
-    }
-
-    /**
-     * Adds a widget to the dashboard.
-     *
-     * Can be removed entirely via a filter, but is visible by default for admins only
-     *
-     * @since 0.9.1
-     * @version 1.3.0
-     */
-    function register_dashboard_widget() {
-        if( apply_filters( 'pre_register_arconix_portfolio_dashboard_widget', true ) and 
-            apply_filters( 'arconix_portfolio_dashboard_widget_security', current_user_can( 'manage_options' ) ) )
-                wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
-    }
-
-    /**
-     * Output for the dashboard widget
-     *
-     * @since 0.9.1
-     * @version 1.4.0
-     */
-    function dashboard_widget_output() {
-        echo '<div class="rss-widget">';
-
-        wp_widget_rss_output( array(
-          'url'       => 'http://arconixpc.com/tag/arconix-portfolio/feed', // feed url
-          'title'     => 'Arconix Portfolio Posts', // feed title
-          'items'     => 3, //how many posts to show
-          'show_summary'  => 1, // display excerpt
-          'show_author'   => 0, // display author
-          'show_date'   => 1 // display post date
-        ) );
-
-        echo '<div class="acp-widget-bottom"><ul>';
-        ?>
-        <li><a href="http://arcnx.co/apwiki"><img src="<?php echo ACP_IMAGES_URL . 'page-16x16.png'?>">Wiki Page</a></li>
-        <li><a href="http://arcnx.co/aphelp"><img src="<?php echo ACP_IMAGES_URL . 'help-16x16.png'?>">Support Forum</a></li>
-        <li><a href="http://arcnx.co/aptrello"><img src="<?php echo ACP_IMAGES_URL . 'trello-16x16.png'?>">Dev Board</a></li>
-        <li><a href="http://arcnx.co/apsource"><img src="<?php echo ACP_IMAGES_URL . 'github-16x16.png'?>">Source Code</a></li>
-        <?php
-        echo '</ul></div></div>';
-    }
-
-    /**
-     * Add the Portfolio post type and Feature taxonomy to the WP 3.8 "At a Glance" dashboard
-     *
-     * @since  1.4.0
-     */
-    function at_a_glance() {
-        $glancer = new Gamajo_Dashboard_Glancer;
-        $glancer->add( 'portfolio' );
-    }
+    
 }
