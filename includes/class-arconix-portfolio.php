@@ -441,7 +441,8 @@ class Arconix_Portfolio {
     * - terms => a 'feature' tag you want to filter on operator => 'IN', 'NOT IN' filter for the term tag above
     *
     * 'Image' is the only officially supported link option. While linking to a page is possible, it may require additional coding
-    * knowledge due to the fact that there are so many themes and nearly every one is different. {@see http://arconixpc.com/2012/linking-portfolio-items-to-pages }
+    * knowledge due to the fact that there are so many themes and nearly every one is different. 
+    * {@see http://arconixpc.com/2012/linking-portfolio-items-to-pages }
     *
     * @param array $args
     * @param bool $echo Determines whether the data is returned or echo'd
@@ -454,9 +455,11 @@ class Arconix_Portfolio {
         $default_args = $this->portfolio_defaults();
         $defaults = $default_args['query'];
 
-        // Merge incoming args with the function defaults and then extract them into variables
+        // Merge incoming args with the function defaults
         $args = wp_parse_args( $args, $defaults );
         //extract( $args );
+
+        $terms = $args['terms'];
 
         if( $args['title'] != "below" ) $args['title'] == "above"; // For backwards compatibility with "yes" and built-in data check
 
@@ -470,7 +473,7 @@ class Arconix_Portfolio {
         );
 
         // If the user has defined any tax terms, then we create our tax_query and merge to our main query
-        if( $qargs['terms'] ) {
+        if( $terms ) {
             $tax_qargs = array( 
                 'tax_query' => array(
                     array(
@@ -486,179 +489,31 @@ class Arconix_Portfolio {
             $qargs = array_merge( $qargs, $tax_qargs );
         }
 
-        $return = ''; // Var that will be concatenated with our portfolio data
+        $return = ''; // Var that will contain all our portfolio data
+
+
 
         // Create a new query based on our own arguments (available to be filtered)
         $query = new WP_Query( apply_filters( 'arconix_portfolio_query', $qargs ) );
 
         if( $query->have_posts() ) {
 
+
             //
-            //arconix_portfolio_before_items( $args );
+            $this->arconix_portfolio_before_items( $args );
             //
             
-            $a = array(); // Var to hold our operate arguments
             
-            if( $terms ) {
-                // Translate our user-entered slug into an id we can use
-                $termid = get_term_by( 'slug', $terms, 'feature' );
-                $termid = $termid->term_id;
-                
-                // Change the get_terms argument based on the shortcode $operator, but default to IN
-                switch( $operator) {
-                    case "NOT IN":
-                        $a = array( 'exclude' => $termid );
-                        break;
-                    
-                    case "IN":
-                    default:
-                        $a = array( 'include' => $termid );
-                        break;
-                }
-            }
-
-            // Set our terms list orderby and order
-            $a['orderby'] = $terms_orderby;
-            $a['order'] = $terms_order;
-
-            // Allow a user to filter the terms list to modify or add their own parameters.
-            $a = apply_filters( 'arconix_portfolio_get_terms', $a );
-
-            // Get the tax terms only from the items in our query
-            $get_terms = get_terms( 'feature', $a );
-
-            // If there aren't multiple terms in use, return early
-            if( count( $get_terms ) > 1 ) {
-
-                $list = '<ul class="arconix-portfolio-features">';
-                
-                if( $heading )
-                    $list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
-
-                $list .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
-
-                // Break each of the items into individual elements and modify the output
-                $term_list = '';        
-                foreach( $get_terms as $term ) {
-                    $term_list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
-                }
-
-                // Return our modified list
-                $list .= $term_list . '</ul>';
-
-                $return .= $list;
-
-            }
-
-            $return .= '<ul class="arconix-portfolio-grid">';
 
             while( $query->have_posts() ) : $query->the_post();
-
-                //
-                //arconix_portfolio_item( $args );
-                //
                 
                 $p_id = get_the_ID();
 
-                // Get the terms list
-                $get_the_terms = get_the_terms( $p_id, 'feature' );                
-
-                // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
-                $return .= '<li data-id="id-' . $p_id . '" data-type="';
+                //
+                $this->arconix_portfolio_item( $p_id, $args );
+                //
                 
-                if( $get_the_terms ) {
-                    foreach ( $get_the_terms as $term ) {
-                        $return .= $term->slug . ' ';
-                    }
-                }
                 
-                $return .= '">';
-
-                // Above image Title output
-                if( $title == "above" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
-
-                /**
-                 * As of v1.3.0, the destination of the link can be defined at the item level. In order to remain backwards compatible
-                 * we have to check if a shortcode parameter was set. If a shortcode param was set, that takes precedence
-                 */
-                
-                if( $link ) {
-                    switch( $link ) {
-                        case "page" :
-                            $return .= '<a class="page" href="' . get_permalink() . '" rel="bookmark">';                        
-                            $return .= get_the_post_thumbnail( $p_id, $thumb );
-                            $return .= '</a>';
-                            break;
-
-                        case "image" :
-                        default :
-                            $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                            $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-                            $return .= get_the_post_thumbnail( $p_id, $thumb );
-                            $return .= '</a>';
-                            break;
-                    }
-                }
-                else {
-                    // Grab the post meta
-                    $link_type = get_post_meta( $p_id, '_acp_link_type', true );
-                    $link_value = get_post_meta( $p_id, '_acp_link_value', true );
-
-                    switch ( $link_type ) {
-                        case 'image' :
-                        default :
-                            $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                            $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-                            $return .= get_the_post_thumbnail( $p_id, $thumb );
-                            $return .= '</a>';
-                            $return .= '<!-- link type = ' . $link_type . ' -->';
-                            break;
-
-                        case 'page' :
-                            $return .= '<a class="portfolio-page" href="' . get_permalink() . '" rel="bookmark">';                        
-                            $return .= get_the_post_thumbnail( $p_id, $thumb );
-                            $return .= '</a>';
-                            $return .= '<!-- link type = ' . $link_type . ' -->';
-                            break;
-
-                        case 'external' :
-                            if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
-                                $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $full );
-                                $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
-                                $return .= get_the_post_thumbnail( $p_id, $thumb );
-                                $return .= '</a>';
-                                $return .= '<!-- link missing -->';
-                            }
-                            else {
-                                $extra_class = '';
-                                $extra_class = apply_filters( 'arconix_portfolio_external_link_class', $extra_class );
-                                $return .= '<a class="portfolio-external '. $extra_class . '" href="' . esc_url( $link_value ) . '">';
-                                $return .= get_the_post_thumbnail( $p_id, $thumb );
-                                $return .= '</a>';
-                                $return .= '<!-- link type = ' . $link_type . ' -->';
-                            }
-                    }
-                }
-
-                // Below image Title output
-                if( $title == "below" ) $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
-
-                // Display the content
-                switch( $display ) {
-                    case "content" :
-                        $return .= '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
-                        break;
-
-                    case "excerpt" :
-                        $return .= '<div class="arconix-portfolio-text">' . get_the_excerpt() . '</div>';
-                        break;
-
-                    default : // If it's anything else, return nothing.
-                        break;
-                }
-
-                $return .= '</li>';
-
             endwhile;
         } // End if have post
 
@@ -677,38 +532,221 @@ class Arconix_Portfolio {
         return $return;
     }
 
-    /**
-     * Displays the terms above the portfolio grid
-     * 
-     * @param  array  $get_terms list of "features" applied to each portfolio item as set by the user
-     * @param  string $heading   is output before the terms and is set at the shortcode level
-     * @return string $list      contains the unordered list of items available to filter
-     * @since  2.0.0
-     */
-    function portfolio_terms_list( $args ) {
+
+    function arconix_portfolio_before_items( $args, $echo = false ) {
+
+        $a = array(); // Var to hold our operate arguments
+
+        $terms = $args['terms'];
+            
+        if( $terms ) {
+            // Translate our user-entered slug into an id we can use
+            $termid = get_term_by( 'slug', $terms, 'feature' );
+            $termid = $termid->term_id;
+            
+            // Change the get_terms argument based on the shortcode $operator, but default to IN
+            switch( $args['operator'] ) {
+                case "NOT IN":
+                    $a = array( 'exclude' => $termid );
+                    break;
+                
+                case "IN":
+                default:
+                    $a = array( 'include' => $termid );
+                    break;
+            }
+        }
+
+        // Set our terms list orderby and order
+        $a['orderby'] = $args['terms_orderby'];
+        $a['order'] = $args['terms_order'];
+
+        // Allow a user to filter the terms list to modify or add their own parameters.
+        $a = apply_filters( 'arconix_portfolio_get_terms', $a );
+
+        // Get the tax terms only from the items in our query
+        $terms = get_terms( 'feature', $a );
+
+        $return = '';
+
         // If there aren't multiple terms in use, return early
-        if( ! count( $get_terms ) > 1 ) 
-            return;
+        if( count( $terms ) > 1 ) {
+
+            //
+            $this->arconix_portfolio_filter_list( $terms, $args );
+            //                
+
+        }
+
+        $return .= '<ul class="arconix-portfolio-grid">';
+
+        // Either echo or return the results
+        if ( $echo )
+            echo $return;
+        else
+            return $return;
+    }
+
+
+    function arconix_portfolio_filter_list( $terms, $args, $echo = false ) {
 
         $list = '<ul class="arconix-portfolio-features">';
-        
-        if( $heading )
+                
+        if( $args['heading'] ) {
+            $heading = $args['heading'];
+
             $list .= "<li class='arconix-portfolio-category-title'>{$heading}</li>";
+        }            
 
         $list .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
 
         // Break each of the items into individual elements and modify the output
-        $term_list = '';        
-        foreach( $get_terms as $term ) {
-            $term_list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
+        foreach( $terms as $term ) {
+            $list .= '<li class="arconix-portfolio-feature"><a href="javascript:void(0)" class="' . $term->slug . '">' . $term->name . '</a></li>';
         }
 
-        // Return our modified list
-        $list .= $term_list . '</ul>';
+        $list .= '</ul>';
 
-        return $list;
 
+        // Either echo or return the results
+        if ( $echo )
+            echo $list;
+        else
+            return $list;
+    
     }
 
-    //function arconix_portfolio_
+
+
+    function arconix_portfolio_item( $id, $args, $echo = false ) {
+
+        // Get the terms list
+        $get_the_terms = get_the_terms( $id, 'feature' );                
+
+        // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
+        $return = '<li data-id="id-' . $id . '" data-type="';
+        
+        if( $get_the_terms ) {
+            foreach ( $get_the_terms as $term ) {
+                $return .= $term->slug . ' ';
+            }
+        }
+        
+        $return .= '">';
+
+        // Above image Title output
+        if( $args['title'] == "above" ) 
+            $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
+
+
+        //
+        $this->arconix_portfolio_item_image( $id, $args );
+        //
+        
+
+        // Below image Title output
+        if( $args['title'] == "below" ) 
+            $return .= '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
+
+        // Display the content
+        switch( $args['display'] ) {
+            case "content" :
+                $return .= '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
+                break;
+
+            case "excerpt" :
+                $return .= '<div class="arconix-portfolio-text">' . get_the_excerpt() . '</div>';
+                break;
+
+            default : // If it's anything else, return nothing.
+                break;
+        }
+
+        $return .= '</li>';
+
+        // Either echo or return the results
+        if ( $echo )
+            echo $return;
+        else
+            return $return;
+    }
+
+
+
+    function arconix_portfolio_item_image( $id, $args, $echo = false ) {
+        /**
+         * As of v1.3.0, the destination of the image link can be defined at the item level. In order to remain 
+         * backwards compatible we have to check if a shortcode parameter was set. If a shortcode param was set,
+         * that takes precedence
+         */
+        $link = $args['link'];
+
+        $return = '';
+        
+        if( $link ) {
+            switch( $link ) {
+                case "page" :
+                    $return .= '<a class="page" href="' . get_permalink() . '" rel="bookmark">';                        
+                    $return .= get_the_post_thumbnail( $id, $args['thumb'] );
+                    $return .= '</a>';
+                    break;
+
+                case "image" :
+                default :
+                    $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $args['full'] );
+                    $return .= '<a class="image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                    $return .= get_the_post_thumbnail( $id, $args['thumb'] );
+                    $return .= '</a>';
+                    break;
+            }
+        }
+        else {
+            // Grab the post meta
+            $link_type = get_post_meta( $id, '_acp_link_type', true );
+            $link_value = get_post_meta( $id, '_acp_link_value', true );
+
+            switch ( $link_type ) {
+                case 'image' :
+                default :
+                    $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $args['full'] );
+                    $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                    $return .= get_the_post_thumbnail( $id, $args['thumb'] );
+                    $return .= '</a>';
+                    $return .= '<!-- link type = ' . $link_type . ' -->';
+                    break;
+
+                case 'page' :
+                    $return .= '<a class="portfolio-page" href="' . get_permalink() . '" rel="bookmark">';                        
+                    $return .= get_the_post_thumbnail( $id, $args['thumb'] );
+                    $return .= '</a>';
+                    $return .= '<!-- link type = ' . $link_type . ' -->';
+                    break;
+
+                case 'external' :
+                    if( empty( $link_value ) ) { // If the user forgot to enter a link value in the text box, just show the image
+                        $_portfolio_img_url = wp_get_attachment_image_src( get_post_thumbnail_id(), $args['full'] );
+                        $return .= '<a class="portfolio-image" href="' . $_portfolio_img_url[0] . '" title="' . the_title_attribute( 'echo=0' ) . '" >';
+                        $return .= get_the_post_thumbnail( $id, $args['thumb'] );
+                        $return .= '</a>';
+                        $return .= '<!-- link missing -->';
+                    }
+                    else {
+                        $extra_class = '';
+                        $extra_class = apply_filters( 'arconix_portfolio_external_link_class', $extra_class );
+                        $return .= '<a class="portfolio-external '. $extra_class . '" href="' . esc_url( $link_value ) . '">';
+                        $return .= get_the_post_thumbnail( $id, $args['thumb'] );
+                        $return .= '</a>';
+                        $return .= '<!-- link type = ' . $link_type . ' -->';
+                    }
+                    break;
+            }
+        }
+
+        // Either echo or return the results
+        if ( $echo )
+            echo $return;
+        else
+            return $return;
+    }
+
 }
