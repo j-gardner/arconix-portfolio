@@ -15,7 +15,7 @@
 
 
 // Include our class
-include_once( plugin_dir_path( __FILE__ ) . '/includes/class-arconix-portfolio.php' );
+require_once( 'includes/class-arconix-portfolio.php' );
 
 
 new Arconix_Portfolio;
