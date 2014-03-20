@@ -505,7 +505,9 @@ class Arconix_Portfolio {
             endwhile;
         } // End if have post
 
-        $this->arconix_portfolio_after_items( $args );
+    $this->arconix_portfolio_after_items( $args );
+
+    wp_reset_postdata();
 
 
     // Either echo or return the results
