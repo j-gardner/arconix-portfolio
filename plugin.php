@@ -14,8 +14,8 @@
  */
 
 
-// Include our class
-require_once( 'includes/class-arconix-portfolio.php' );
+// Include our classes
+require_once( plugin_dir_path( __FILE__ ) . 'includes/class-arconix-portfolio.php' );
+require_once( plugin_dir_path( __FILE__ ) . 'includes/class-arconix-portfolio-admin.php' );
 
-
-new Arconix_Portfolio;
+new Arconix_Portfolio_Admin;
