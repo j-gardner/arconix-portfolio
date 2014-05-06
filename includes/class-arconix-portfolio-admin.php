@@ -2,10 +2,12 @@
 
 class Arconix_Portfolio_Admin {
 
+    public static $version = '1.3.2';
+
     /**
      * Construct Method
      */
-    function __construct() {
+    public function __construct() {
         $this->constants();
 
         register_activation_hook( __FILE__,             array( $this, 'activation' ) );
@@ -35,8 +37,8 @@ class Arconix_Portfolio_Admin {
      *
      * @since  1.2.0
      */
-    function constants() {
-        define( 'ACP_VERSION',          '1.3.2' );
+    public function constants() {
+        define( 'ACP_VERSION',          self::$version );
         define( 'ACP_URL',              trailingslashit( plugin_dir_url( __FILE__ ) ) );
         define( 'ACP_IMAGES_URL',       trailingslashit( ACP_URL . 'images' ) );
         define( 'ACP_CSS_URL',          trailingslashit( ACP_URL . 'css' ) );
@@ -47,10 +49,10 @@ class Arconix_Portfolio_Admin {
     /**
      * Runs on Plugin Activation
      * Registers our Post Type and Taxonomy
-     * 
+     *
      * @since  1.2.0
      */
-    function activation() {
+    public function activation() {
         $this->content_types();
         flush_rewrite_rules();
     }
@@ -60,7 +62,7 @@ class Arconix_Portfolio_Admin {
      *
      * @since  1.2.0
      */
-    function deactivation() {
+    public function deactivation() {
         flush_rewrite_rules();
     }
 
@@ -69,20 +71,20 @@ class Arconix_Portfolio_Admin {
      *
      * @since 1.2.0
      */
-    function content_types() {
+    public function content_types() {
         $defaults = $this->defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
 
-        
+
     }
 
     /**
      * Load our Meta Box and WP3.8 Dashboard classes
-     * 
-     * @since  
+     *
+     * @since
      */
-    function init() {
+    public function init() {
         if ( ! class_exists( 'cmb_Meta_Box' ) )
             require_once( ACP_DIR . '/metabox/init.php' );
 
@@ -96,7 +98,7 @@ class Arconix_Portfolio_Admin {
      * @since  1.2.0
      * @return array $defaults
      */
-    function defaults() {
+    public function defaults() {
         // Establishes plugin registration defaults for post type and taxonomy
         $defaults = array(
             'post_type' => array(
@@ -164,7 +166,7 @@ class Arconix_Portfolio_Admin {
      * @return array $meta_boxes
      * @since 1.3.0
      */
-    function metaboxes( $meta_boxes ) {
+    public function metaboxes( $meta_boxes ) {
         $metabox = array(
             'id'            => 'portfolio-setting',
             'title'         => __( 'Portfolio Setting', 'acp' ),
@@ -202,29 +204,33 @@ class Arconix_Portfolio_Admin {
      * Correct messages when Portfolio post type is saved
      *
      * @global stdObject $post
-     * @global int       $post_ID
-     * @param  array     $messages
-     * @return array     $messages
-     * @since  0.9.0
+     * @global int $post_ID
+     * @param  array $messages
+     *
+     * @return array update messages
+     *
+     * @since 0.9.0
+     * @version 1.4.0
      */
-    function updated_messages( $messages ) {
+    private function updated_messages( $messages ) {
         global $post, $post_ID;
+        $post_type = get_post_type( $post_ID );
 
-        $messages['portfolio'] = array(
-            0 => '', // Unused. Messages start at index 1.
-            1 => sprintf( __( 'Portfolio Item updated. <a href="%s">View portfolio item</a>' ), esc_url( get_permalink($post_ID) ) ),
-            2 => __( 'Custom field updated.' ),
-            3 => __( 'Custom field deleted.' ),
-            4 => __( 'Portfolio item updated.' ),
-            /* translators: %s: date and time of the revision */
-            5 => isset( $_GET['revision'] ) ? sprintf( __( 'Portfolio item restored to revision from %s' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-            6 => sprintf( __( 'Portfolio item published. <a href="%s">View portfolio item</a>' ), esc_url( get_permalink($post_ID) ) ),
-            7 => __( 'Portfolio item saved.'),
-            8 => sprintf( __( 'Portfolio item submitted. <a target="_blank" href="%s">Preview portfolio item</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
-            9 => sprintf( __( 'Portfolio item scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview portfolio item</a>' ),
-              // translators: Publish box date format, see http://php.net/date
-                date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink($post_ID) ) ),
-            10 => sprintf( __( 'Portfolio item draft updated. <a target="_blank" href="%s">Preview portfolio item</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
+        $obj = get_post_type_object( $post_type );
+        $singular = $obj->labels->singular_name;
+
+        $messages[$post_type] = array(
+            0  => '', // Unused. Messages start at index 1.
+            1  => sprintf( __( $singular . ' updated. <a href="%s">View ' . strtolower( $singular ) . '</a>' ), esc_url( get_permalink( $post_ID ) ) ),
+            2  => __( 'Custom field updated.' ),
+            3  => __( 'Custom field deleted.' ),
+            4  => __( $singular . ' updated.' ),
+            5  => isset( $_GET['revision'] ) ? sprintf( __( $singular . ' restored to revision from %s' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+            6  => sprintf( __( $singular . ' published. <a href="%s">View ' . strtolower( $singular ) . '</a>' ), esc_url( get_permalink( $post_ID ) ) ),
+            7  => __( 'Page saved.' ),
+            8  => sprintf( __( $singular . ' submitted. <a target="_blank" href="%s">Preview ' . strtolower( $singular ) . '</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
+            9  => sprintf( __( $singular . ' scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview ' . strtolower( $singular ) . '</a>' ), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink( $post_ID ) ) ),
+            10 => sprintf( __( $singular . ' draft updated. <a target="_blank" href="%s">Preview ' . strtolower( $singular ) . '</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
         );
 
         return $messages;
@@ -238,7 +244,7 @@ class Arconix_Portfolio_Admin {
      * @since    0.9.0
      * @version  1.2.0
      */
-    function columns_filter ( $columns ) {
+    public function columns_filter ( $columns ) {
         $columns = array(
             'cb'                    => '<input type="checkbox" />',
             'portfolio_thumbnail'   => __( 'Image', 'acp' ),
@@ -260,7 +266,7 @@ class Arconix_Portfolio_Admin {
      * @since  0.9.0
      * @version  1.2.0
      */
-    function columns_data( $column ) {
+    public function columns_data( $column ) {
         global $post;
 
         switch( $column ) {
@@ -287,9 +293,9 @@ class Arconix_Portfolio_Admin {
      * @example add_filter( 'pre_register_arconix_portfolio_js', '__return_false' );
      *
      * @since   0.9
-     * @version 
+     * @version
      */
-    function scripts() {
+    public function scripts() {
         // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
         WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
 
@@ -304,7 +310,7 @@ class Arconix_Portfolio_Admin {
                 wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
             else
                 wp_register_script( 'arconix-portfolio-js', ACP_JS_URL . 'arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
-        }        
+        }
 
         // CSS
         if( apply_filters( 'pre_register_arconix_portfolio_css', true ) ) {
@@ -315,7 +321,7 @@ class Arconix_Portfolio_Admin {
             else
                 wp_enqueue_style( 'arconix-portfolio', ACP_CSS_URL . 'arconix-portfolio.css', false, ACP_VERSION );
         }
-        
+
     }
 
     /**
@@ -323,7 +329,7 @@ class Arconix_Portfolio_Admin {
      *
      * @since  1.2.0
      */
-    function admin_css() {
+    public function admin_css() {
         wp_enqueue_style( 'arconix-portfolio-admin', ACP_CSS_URL . 'admin.css', false, ACP_VERSION );
     }
 
@@ -335,8 +341,8 @@ class Arconix_Portfolio_Admin {
      * @since   0.9.1
      * @version 1.3.0
      */
-    function register_dashboard_widget() {
-        if( apply_filters( 'pre_register_arconix_portfolio_dashboard_widget', true ) and 
+    public function register_dashboard_widget() {
+        if( apply_filters( 'pre_register_arconix_portfolio_dashboard_widget', true ) and
             apply_filters( 'arconix_portfolio_dashboard_widget_security', current_user_can( 'manage_options' ) ) )
                 wp_add_dashboard_widget( 'ac-portfolio', 'Arconix Portfolio', array( $this, 'dashboard_widget_output' ) );
     }
@@ -347,7 +353,7 @@ class Arconix_Portfolio_Admin {
      * @since   0.9.1
      * @version 1.4.0
      */
-    function dashboard_widget_output() {
+    public function dashboard_widget_output() {
         echo '<div class="rss-widget">';
 
         wp_widget_rss_output( array(
@@ -372,9 +378,9 @@ class Arconix_Portfolio_Admin {
     /**
      * Add the Portfolio post type and Feature taxonomy to the WP 3.8 "At a Glance" dashboard
      *
-     * @since  
+     * @since
      */
-    function at_a_glance() {
+    public function at_a_glance() {
         $glancer = new Gamajo_Dashboard_Glancer;
         $glancer->add( 'portfolio' );
     }
@@ -387,7 +393,7 @@ class Arconix_Portfolio_Admin {
      * @since   0.9
      * @version 1.3.1
      */
-    function acp_portfolio_shortcode( $atts, $content = null ) {
+    public function acp_portfolio_shortcode( $atts, $content = null ) {
         if( wp_script_is( 'arconix-portfolio-js', 'registered' ) ) wp_enqueue_script( 'arconix-portfolio-js' );
 
         $p = new Arconix_Portfolio();
