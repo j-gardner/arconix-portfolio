@@ -9,12 +9,13 @@ class Arconix_Portfolio {
 
     /**
      * Establish the portfolio item defaults
-     * 
+     *
      * @return array defaults
-     * @since  
+     *
+     * @since  1.4.0
      */
     function defaults() {
-        $defaults = array( 
+        $defaults = array(
             'link'              => '',
             'thumb'             => 'portfolio-thumb',
             'full'              => 'portfolio-large',
@@ -50,13 +51,14 @@ class Arconix_Portfolio {
     * - terms => a 'feature' tag you want to filter on operator => 'IN', 'NOT IN' filter for the term tag above
     *
     * 'Image' is the only officially supported link option. While linking to a page is possible, it may require additional coding
-    * knowledge due to the fact that there are so many themes and nearly every one is different. 
+    * knowledge due to the fact that there are so many themes and nearly every one is different.
     * {@see http://arconixpc.com/2012/linking-portfolio-items-to-pages }
     *
     * @param array $args
     * @param bool $echo Determines whether the data is returned or echo'd
-    * @since  1.2.0
-    * @version 
+    *
+    * @since   1.2.0
+    * @version 1.4.0
     *
     */
     function loop( $args, $echo = false ) {
@@ -70,27 +72,27 @@ class Arconix_Portfolio {
 
         // Default Query arguments
         $qargs = array(
-            'post_type' => 'portfolio',
-            'meta_key' => '_thumbnail_id', // Pull only items with featured images
-            'posts_per_page' => $args['posts_per_page'],
-            'orderby' => $args['orderby'],
-            'order' => $args['order'],
+            'post_type'         => 'portfolio',
+            'meta_key'          => '_thumbnail_id', // Pull only items with featured images
+            'posts_per_page'    => $args['posts_per_page'],
+            'orderby'           => $args['orderby'],
+            'order'             => $args['order'],
         );
 
         // If the user has defined any tax terms, then we create our tax_query and merge to our main query
         $terms = $args['terms'];
         if( $terms ) {
-            $tax_qargs = array( 
+            $tax_qargs = array(
                 'tax_query' => array(
                     array(
-                        'taxonomy' => 'feature',
-                        'field' => 'slug',
-                        'terms' => $args['terms'],
-                        'operator' => $args['operator']
+                        'taxonomy'  => 'feature',
+                        'field'     => 'slug',
+                        'terms'     => $args['terms'],
+                        'operator'  => $args['operator']
                     )
                 )
             );
-            
+
             // Merge the tax array with the general query
             $qargs = array_merge( $qargs, $tax_qargs );
         }
@@ -127,11 +129,13 @@ class Arconix_Portfolio {
 
     /**
      * Runs after the items have been output
-     * 
+     *
      * @param  array   $args incoming arguments
      * @param  boolean $echo return or echo the data
+     *
      * @return string
-     * @since  
+     *
+     * @since  1.4.0
      */
     function arconix_portfolio_after_items( $args, $echo = true ) {
         ob_start();
@@ -148,11 +152,13 @@ class Arconix_Portfolio {
     /**
      * Runs after we know there are portfolio items to loop through but before we actually
      * loop through them
-     * 
+     *
      * @param  array   $args the args pushed into the function (typically via shortcode)
      * @param  boolean $echo echo or return the data
+     *
      * @return string        the image wrapped in a hyperlink
-     * @since  
+     *
+     * @since  1.4.0
      */
     function arconix_portfolio_do_before_items( $args, $echo = true ) {
         // FUNCTION IN DEVELOPMENT RIGHT NOW
@@ -171,32 +177,33 @@ class Arconix_Portfolio {
      * Determines if the 'features' have been added to the portfolio items returned
      * by the query. If there are more than one, we create an unordered list to display
      * them.
-     * 
+     *
      * @param  array   $terms the terms used to create the filter list
      * @param  array   $args  the args pushed into the function (typically via shortcode)
      * @param  boolean $echo  echo or return the data
+     *
      * @return string         the image wrapped in a hyperlink
-     * @since  
+     *
+     * @since  1.4.0
      */
     function arconix_portfolio_filter_list( $args, $echo = true ) {
-
         ob_start();
 
         $a = array(); // Var to hold our operate arguments
 
         $terms = $args['terms'];
-            
+
         if( $terms ) {
             // Translate our user-entered slug into an id we can use
             $termid = get_term_by( 'slug', $terms, 'feature' );
             $termid = $termid->term_id;
-            
+
             // Change the get_terms argument based on the shortcode $operator, but default to IN
             switch( $args['operator'] ) {
                 case "NOT IN":
                     $a = array( 'exclude' => $termid );
                     break;
-                
+
                 case "IN":
                 default:
                     $a = array( 'include' => $termid );
@@ -215,14 +222,14 @@ class Arconix_Portfolio {
         $terms = get_terms( 'feature', $a );
 
         // If we have multiple terms, then build our filter list
-        if( count( $terms ) > 1 ) { 
+        if( count( $terms ) > 1 ) {
             echo '<ul class="arconix-portfolio-features">';
-                
+
             if( $args['heading'] ) {
                 $heading = $args['heading'];
 
                 echo "<li class='arconix-portfolio-category-title'>{$heading}</li>";
-            }            
+            }
 
             echo '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
 
@@ -237,7 +244,7 @@ class Arconix_Portfolio {
 
         echo '<ul class="arconix-portfolio-grid">';
 
-        
+
 
 
         // Either echo or return the results
@@ -250,43 +257,44 @@ class Arconix_Portfolio {
 
     /**
      * Output the individual portfolio item. Runs inside the loop
-     * 
+     *
      * @param  array   $args the args pushed into the function (typically via shortcode)
      * @param  boolean $echo echo or return the data
+     *
      * @return string        the image wrapped in a hyperlink
-     * @since  
+     *
+     * @since  1.4.0
      */
     function arconix_portfolio_item( $args, $echo = true ) {
-
         ob_start();
 
         $id = get_the_ID();
 
         // Get the terms list
-        $get_the_terms = get_the_terms( $id, 'feature' );                
+        $get_the_terms = get_the_terms( $id, 'feature' );
 
         // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
         echo '<li data-id="id-' . $id . '" data-type="';
-        
+
             if( $get_the_terms ) {
                 foreach ( $get_the_terms as $term ) {
                     echo $term->slug . ' ';
                 }
             }
-        
+
         echo '">';
 
         // Above image Title output
-        if( $args['title'] == "above" ) 
+        if( $args['title'] == "above" )
             echo '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
 
 
         // Outputs the image wrapped in the appropriate hyperlink
         $this->arconix_portfolio_item_image( $args );
-       
+
 
         // Below image Title output
-        if( $args['title'] == "below" ) 
+        if( $args['title'] == "below" )
             echo '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
 
         // Display the content
@@ -315,29 +323,31 @@ class Arconix_Portfolio {
 
     /**
      * Handles the output of the portfolio item image including what link is fired
-     * 
+     *
      * @param  array   $args the args pushed into the function (typically via shortcode)
-     * @param  boolean $echo true|false
+     * @param  boolean $echo echo or return the data
+     *
      * @return string        the image wrapped in a hyperlink
-     * @since  2.0.0
+     *
+     * @since  1.4.0
      */
     function arconix_portfolio_item_image( $args, $echo = true ) {
 
         ob_start();
-        
+
         $link = $args['link'];
 
         $id = get_the_ID();
 
         /**
-         * As of v1.3.0, the destination of the image link can be defined at the item level. In order to remain 
+         * As of v1.3.0, the destination of the image link can be defined at the item level. In order to remain
          * backwards compatible we have to check if a shortcode parameter was set. If a shortcode param was set,
          * that takes precedence
          */
         if( $link ) {
             switch( $link ) {
                 case "page" :
-                    echo '<a class="page" href="' . get_permalink() . '" rel="bookmark">';                        
+                    echo '<a class="page" href="' . get_permalink() . '" rel="bookmark">';
                     echo get_the_post_thumbnail( $id, $args['thumb'] );
                     echo '</a>';
                     break;
@@ -367,7 +377,7 @@ class Arconix_Portfolio {
                     break;
 
                 case 'page' :
-                    echo '<a class="portfolio-page" href="' . get_permalink() . '" rel="bookmark">';                        
+                    echo '<a class="portfolio-page" href="' . get_permalink() . '" rel="bookmark">';
                     echo get_the_post_thumbnail( $id, $args['thumb'] );
                     echo '</a>';
                     echo '<!-- link type = ' . $link_type . ' -->';

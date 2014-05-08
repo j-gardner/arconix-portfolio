@@ -35,7 +35,8 @@ class Arconix_Portfolio_Admin {
     /**
      * Define plugin constants
      *
-     * @since  1.2.0
+     * @since   1.2.0
+     * @version 1.4.0
      */
     public function constants() {
         define( 'ACP_VERSION',          self::$version );
@@ -72,14 +73,12 @@ class Arconix_Portfolio_Admin {
         $defaults = $this->defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
-
-
     }
 
     /**
      * Load our Meta Box and WP3.8 Dashboard classes
      *
-     * @since
+     * @since 1.4.0
      */
     public function init() {
         if ( ! class_exists( 'cmb_Meta_Box' ) )
@@ -92,8 +91,10 @@ class Arconix_Portfolio_Admin {
     /**
      * Define the defaults used in the registration of the post type and taxonomy
      *
-     * @since  1.2.0
-     * @return array $defaults
+     * @return  array $defaults
+     *
+     * @since   1.2.0
+     * @version 1.4.0
      */
     public function defaults() {
         // Establishes plugin registration defaults for post type and taxonomy
@@ -161,7 +162,9 @@ class Arconix_Portfolio_Admin {
      * Create the post type metabox
      *
      * @param array $meta_boxes
+     *
      * @return array $meta_boxes
+     *
      * @since 1.3.0
      */
     public function metaboxes( $meta_boxes ) {
@@ -201,13 +204,13 @@ class Arconix_Portfolio_Admin {
     /**
      * Correct messages when Portfolio post type is saved
      *
-     * @global stdObject $post
-     * @global int $post_ID
-     * @param  array $messages
+     * @global stdObject    $post
+     * @global int          $post_ID
+     * @param  array        $messages
      *
-     * @return array update messages
+     * @return array        updated messages
      *
-     * @since 0.9.0
+     * @since   0.9.0
      * @version 1.4.0
      */
     public function updated_messages( $messages ) {
@@ -238,7 +241,9 @@ class Arconix_Portfolio_Admin {
      * Filter the columns on the admin screen and define our own
      *
      * @param    array $columns
+     *
      * @return   array $soumns
+     *
      * @since    0.9.0
      * @version  1.4.0
      */
@@ -258,7 +263,9 @@ class Arconix_Portfolio_Admin {
      * Filter the data that shows up in the columns we defined above
      *
      * @global  stdObject $post
+     *
      * @param  object $column
+     *
      * @since  0.9.0
      * @version  1.2.0
      */
@@ -286,14 +293,14 @@ class Arconix_Portfolio_Admin {
      * @example add_filter( 'pre_register_arconix_portfolio_js', '__return_false' );
      *
      * @since   0.9
-     * @version
+     * @version 1.4.0
      */
     public function scripts() {
         // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
         WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
 
-        wp_register_script( 'jquery-quicksand', ACP_URL . 'includes/js/jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
-        wp_register_script( 'jquery-easing', ACP_URL . 'includes/js/jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
+        wp_register_script( 'jquery-quicksand', ACP_URL . 'js/jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
+        wp_register_script( 'jquery-easing', ACP_URL . 'js/jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
 
         // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load in the correct order
         if( apply_filters( 'pre_register_arconix_portfolio_js', true ) ) {
@@ -302,7 +309,7 @@ class Arconix_Portfolio_Admin {
             elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
                 wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
             else
-                wp_register_script( 'arconix-portfolio-js', ACP_URL . 'includes/js/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', ACP_URL . 'js/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
         }
 
         // CSS
@@ -312,7 +319,7 @@ class Arconix_Portfolio_Admin {
             elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
                 wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
             else
-                wp_enqueue_style( 'arconix-portfolio', ACP_URL . 'includes/css/arconix-portfolio.css', false, ACP_VERSION );
+                wp_enqueue_style( 'arconix-portfolio', ACP_URL . 'css/arconix-portfolio.css', false, ACP_VERSION );
         }
 
     }
@@ -323,7 +330,7 @@ class Arconix_Portfolio_Admin {
      * @since  1.2.0
      */
     public function admin_css() {
-        wp_enqueue_style( 'arconix-portfolio-admin', ACP_URL . 'includes/css/admin.css', false, ACP_VERSION );
+        wp_enqueue_style( 'arconix-portfolio-admin', ACP_URL . 'css/admin.css', false, ACP_VERSION );
     }
 
     /**
@@ -371,7 +378,7 @@ class Arconix_Portfolio_Admin {
     /**
      * Add the Portfolio post type and Feature taxonomy to the WP 3.8 "At a Glance" dashboard
      *
-     * @since
+     * @since 1.4.0
      */
     public function at_a_glance() {
         $glancer = new Gamajo_Dashboard_Glancer;
