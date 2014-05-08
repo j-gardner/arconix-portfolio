@@ -103,7 +103,7 @@ class Arconix_Portfolio {
         // After all that build up, run our query
         $query = new WP_Query( apply_filters( 'arconix_portfolio_query', $qargs ) );
 
-        if( $query->have_posts() ) {
+        if( $query->have_posts() ) :
 
             // right now this function calls the list directly.
             $this->arconix_portfolio_filter_list( $args );
@@ -113,9 +113,10 @@ class Arconix_Portfolio {
                 $this->arconix_portfolio_item( $args );
 
             endwhile;
-        } // End if have post
 
-    $this->arconix_portfolio_after_items( $args );
+            $this->arconix_portfolio_after_items( $args );
+
+        endif;
 
     wp_reset_postdata();
 
