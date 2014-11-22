@@ -1,6 +1,61 @@
 <?php
 
+/**
+ * Defines and handles all backend plugin operation
+ *
+ * @since   1.0.0
+ */
 class Arconix_Portfolio_Admin {
+
+    /**
+     * The version of this plugin.
+     *
+     * @since   2.0.0
+     * @access  private
+     * @var     string      $version    The vurrent version of this plugin.
+     */
+    private $version;
+
+    /**
+     * The directory path to this plugin.
+     *
+     * @since   2.0.0
+     * @access  private
+     * @var     string      $dir    The directory path to this plugin
+     */
+    private $dir;
+
+    /**
+     * The url path to this plugin.
+     *
+     * @since   2.0.0
+     * @access  private
+     * @var     string      $url    The url path to this plugin
+     */
+    private $url;
+
+    /**
+     * Initialize the class and set its properties.
+     *
+     * @since   1.2.0
+     * @version 2.0.0
+     * @access  public
+     * @param   string      $version    The version of this plugin.
+     */
+    public function __construct( $version ) {
+        $this->version = $version;
+        $this->dir = trailingslashit( plugin_dir_path( __FILE__ ) );
+        $this->url = trailingslashit( plugin_dir_url( __FILE__ ) );
+
+        
+    }
+}
+
+
+
+
+
+class Arconix_Portfolio_Admin_2 {
 
     public static $version = '1.3.2';
 
