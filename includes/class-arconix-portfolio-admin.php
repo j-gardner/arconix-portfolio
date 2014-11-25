@@ -47,29 +47,10 @@ class Arconix_Portfolio_Admin {
         $this->dir = trailingslashit( plugin_dir_path( __FILE__ ) );
         $this->url = trailingslashit( plugin_dir_url( __FILE__ ) );
 
-        
-    }
-}
-
-
-
-
-
-class Arconix_Portfolio_Admin_2 {
-
-    public static $version = '1.3.2';
-
-    /**
-     * Construct Method
-     */
-    public function __construct() {
-        $this->constants();
-
         register_activation_hook( __FILE__,             array( $this, 'activation' ) );
         register_deactivation_hook( __FILE__,           array( $this, 'deactivation' ) );
 
         add_action( 'init',                             array( $this, 'content_types' ) );
-        add_action( 'init',                             array( $this, 'init' ), 9999 );
         add_action( 'manage_posts_custom_column',       array( $this, 'columns_data' ) );
         add_action( 'wp_enqueue_scripts',               array( $this, 'scripts' ) );
         add_action( 'admin_enqueue_scripts',            array( $this, 'admin_css' ) );
@@ -85,18 +66,6 @@ class Arconix_Portfolio_Admin_2 {
         add_image_size( 'portfolio-large',              620, 9999 );
 
         add_shortcode( 'portfolio',                     array( $this, 'acp_portfolio_shortcode' ) );
-    }
-
-    /**
-     * Define plugin constants
-     *
-     * @since   1.2.0
-     * @version 1.4.0
-     */
-    public function constants() {
-        define( 'ACP_VERSION',          self::$version );
-        define( 'ACP_URL',              trailingslashit( plugin_dir_url( __FILE__ ) ) );
-        define( 'ACP_DIR',              trailingslashit( plugin_dir_path( __FILE__ ) ) );
     }
 
     /**
@@ -128,19 +97,6 @@ class Arconix_Portfolio_Admin_2 {
         $defaults = $this->defaults();
         register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
         register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
-    }
-
-    /**
-     * Load our Meta Box and WP3.8 Dashboard classes
-     *
-     * @since 1.4.0
-     */
-    public function init() {
-        if ( ! class_exists( 'cmb_Meta_Box' ) )
-            require_once( ACP_DIR . '/metabox/init.php' );
-
-        if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
-            require_once( ACP_DIR . 'class-gamajo-dashboard-glancer.php' );
     }
 
     /**
@@ -354,27 +310,27 @@ class Arconix_Portfolio_Admin_2 {
         // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
         WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
 
-        wp_register_script( 'jquery-quicksand', ACP_URL . 'js/jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
-        wp_register_script( 'jquery-easing', ACP_URL . 'js/jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
+        wp_register_script( 'jquery-quicksand', $this->url . 'js/jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
+        wp_register_script( 'jquery-easing', $this->url . 'js/jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
 
         // JS -- Only requires jquery-easing as Easing requires Quicksand, which requires jQuery, so all dependencies load in the correct order
         if( apply_filters( 'pre_register_arconix_portfolio_js', true ) ) {
             if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.js' ) )
-                wp_register_script( 'arconix-portfolio-js', get_stylesheet_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', get_stylesheet_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), $this->version, true );
             elseif( file_exists( get_template_directory() . '/arconix-portfolio.js' ) )
-                wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', get_template_directory_uri() . '/arconix-portfolio.js', array( 'jquery-easing' ), $this->version, true );
             else
-                wp_register_script( 'arconix-portfolio-js', ACP_URL . 'js/arconix-portfolio.js', array( 'jquery-easing' ), ACP_VERSION, true );
+                wp_register_script( 'arconix-portfolio-js', $this->url . 'js/arconix-portfolio.js', array( 'jquery-easing' ), $this->version, true );
         }
 
         // CSS
         if( apply_filters( 'pre_register_arconix_portfolio_css', true ) ) {
             if( file_exists( get_stylesheet_directory() . '/arconix-portfolio.css' ) )
-                wp_enqueue_style( 'arconix-portfolio', get_stylesheet_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
+                wp_enqueue_style( 'arconix-portfolio', get_stylesheet_directory_uri() . '/arconix-portfolio.css', false, $this->version );
             elseif( file_exists( get_template_directory() . '/arconix-portfolio.css' ) )
-                wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, ACP_VERSION );
+                wp_enqueue_style( 'arconix-portfolio', get_template_directory_uri() . '/arconix-portfolio.css', false, $this->version );
             else
-                wp_enqueue_style( 'arconix-portfolio', ACP_URL . 'css/arconix-portfolio.css', false, ACP_VERSION );
+                wp_enqueue_style( 'arconix-portfolio', $this->url . 'css/arconix-portfolio.css', false, $this->version );
         }
 
     }
@@ -385,7 +341,7 @@ class Arconix_Portfolio_Admin_2 {
      * @since  1.2.0
      */
     public function admin_css() {
-        wp_enqueue_style( 'arconix-portfolio-admin', ACP_URL . 'css/admin.css', false, ACP_VERSION );
+        wp_enqueue_style( 'arconix-portfolio-admin', $this->url . 'css/admin.css', false, $this->version );
     }
 
     /**
@@ -422,10 +378,10 @@ class Arconix_Portfolio_Admin_2 {
 
         echo '<div class="acp-widget-bottom"><ul>';
         ?>
-        <li><a href="http://arcnx.co/apwiki"><img src="<?php echo ACP_URL . 'includes/images/page-16x16.png'?>">Documentation</a></li>
-        <li><a href="http://arcnx.co/aphelp"><img src="<?php echo ACP_URL . 'includes/images/help-16x16.png'?>">Support Forum</a></li>
-        <li><a href="http://arcnx.co/aptrello"><img src="<?php echo ACP_URL . 'includes/images/trello-16x16.png'?>">Dev Board</a></li>
-        <li><a href="http://arcnx.co/apsource"><img src="<?php echo ACP_URL . 'includes/images/github-16x16.png'?>">Source Code</a></li>
+        <li><a href="http://arcnx.co/apwiki"><img src="<?php echo $this->url . 'includes/images/page-16x16.png'?>">Documentation</a></li>
+        <li><a href="http://arcnx.co/aphelp"><img src="<?php echo $this->url . 'includes/images/help-16x16.png'?>">Support Forum</a></li>
+        <li><a href="http://arcnx.co/aptrello"><img src="<?php echo $this->url . 'includes/images/trello-16x16.png'?>">Dev Board</a></li>
+        <li><a href="http://arcnx.co/apsource"><img src="<?php echo $this->url . 'includes/images/github-16x16.png'?>">Source Code</a></li>
         <?php
         echo '</ul></div></div>';
     }
@@ -451,9 +407,8 @@ class Arconix_Portfolio_Admin_2 {
     public function acp_portfolio_shortcode( $atts, $content = null ) {
         if( wp_script_is( 'arconix-portfolio-js', 'registered' ) ) wp_enqueue_script( 'arconix-portfolio-js' );
 
-        $p = new Arconix_Portfolio();
+        $p = new Arconix_Portfolio;
 
         return $p->loop( $atts );
     }
-
 }

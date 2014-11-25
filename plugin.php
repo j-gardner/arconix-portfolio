@@ -18,10 +18,20 @@ class Arconix_Portfolio_Gallery {
     /**
      * Stores the current version of the plugin.
      *
-     * @since   1.0.0
-     * @var     string  $version    Current plugin version
+     * @since   2.0.0
+     * @access  private
+     * @var     string      $version    Current plugin version
      */
-    public static $version = '1.3.2';
+    private $version;
+
+    /**
+     * The directory path to the plugin file's includes folder.
+     *
+     * @since   2.0.0
+     * @access  private
+     * @var     string      $inc    The directory path to the includes folder
+     */
+    private $inc;
 
     /**
      * Initialize the class and set its properties.
@@ -30,6 +40,8 @@ class Arconix_Portfolio_Gallery {
      * @version 2.0.0
      */
     public function __construct() {
+        $this->version = '1.3.2';
+        $this->inc = trailingslashit( plugin_dir_path( __FILE__ ) . '/includes' );
         $this->load_dependencies();
         $this->load_admin();
     }
@@ -45,6 +57,12 @@ class Arconix_Portfolio_Gallery {
     private function load_dependencies() {
         require_once( plugin_dir_path( __FILE__ ) . '/includes/class-arconix-portfolio-admin.php' );
         require_once( plugin_dir_path( __FILE__ ) . '/includes/class-arconix-portfolio-public.php' );
+
+        if ( ! class_exists( 'cmb_Meta_Box' ) )
+            require_once( $this->inc . 'metabox/init.php');
+
+        if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
+            require_once( $this->inc . 'class-gamajo-dashboard-glancer.php' );
     }
 
     /**
@@ -60,15 +78,16 @@ class Arconix_Portfolio_Gallery {
     /**
      * Get the current version of the plugin
      *
+     * @since   2.0.0
      * @return  string  Plugin current version
      */
     public function get_version() {
-        return self::version;
+        return $this->version;
     }
 }
 
 /** Vroom vroom */
 add_action( 'plugins_loaded', 'arconix_portfolio_gallery_run' );
 function arconix_portfolio_gallery_run() {
-    new Arconix_Portfolio_Gallery();
+    new Arconix_Portfolio_Gallery;
 }

@@ -1,11 +1,11 @@
 <?php
-
+/**
+ * Class to handle the output of the portfolio items
+ *
+ * @since 1.0.0
+ */
 class Arconix_Portfolio {
 
-    /**
-     * Construct Method
-     */
-    function __construct() { }
 
     /**
      * Establish the portfolio item defaults
