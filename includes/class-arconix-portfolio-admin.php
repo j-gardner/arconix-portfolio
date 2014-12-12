@@ -378,10 +378,10 @@ class Arconix_Portfolio_Admin {
 
         echo '<div class="acp-widget-bottom"><ul>';
         ?>
-        <li><a href="http://arcnx.co/apwiki"><img src="<?php echo $this->url . 'includes/images/page-16x16.png'?>">Documentation</a></li>
-        <li><a href="http://arcnx.co/aphelp"><img src="<?php echo $this->url . 'includes/images/help-16x16.png'?>">Support Forum</a></li>
-        <li><a href="http://arcnx.co/aptrello"><img src="<?php echo $this->url . 'includes/images/trello-16x16.png'?>">Dev Board</a></li>
-        <li><a href="http://arcnx.co/apsource"><img src="<?php echo $this->url . 'includes/images/github-16x16.png'?>">Source Code</a></li>
+        <li><a href="http://arcnx.co/apwiki"><img src="<?php echo $this->url . 'images/page-16x16.png'?>">Documentation</a></li>
+        <li><a href="http://arcnx.co/aphelp"><img src="<?php echo $this->url . 'images/help-16x16.png'?>">Support Forum</a></li>
+        <li><a href="http://arcnx.co/aptrello"><img src="<?php echo $this->url . 'images/trello-16x16.png'?>">Dev Board</a></li>
+        <li><a href="http://arcnx.co/apsource"><img src="<?php echo $this->url . 'images/github-16x16.png'?>">Source Code</a></li>
         <?php
         echo '</ul></div></div>';
     }
