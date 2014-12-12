@@ -72,7 +72,7 @@ class Arconix_Portfolio_Gallery {
      */
     private function load_admin() {
         if ( is_admin() )
-            new Arconix_Plugins_Admin( $this->get_version() );
+            new Arconix_Portfolio_Admin( $this->get_version() );
     }
 
     /**
