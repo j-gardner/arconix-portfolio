@@ -6,13 +6,25 @@
  */
 class Arconix_Portfolio {
 
+    /**
+     * Constructor
+     *
+     * Adds the appropriate functions to the appropriate hooks
+     *
+     * @todo test populating add_action() items through the construct.
+     */
+    function __construct() {
+        add_action( 'arconix_portfolio_before_items',   array( $this, 'filter_list'             ), 10 );
+        add_action( 'arconix_portfolio_before_items',   array( $this, 'begin_portfolio_list'    ), 15 );
+        add_action( 'arconix_portfolio_after_items',    array( $this, 'end_portfolio_list'      ), 15 );
+    }
 
     /**
      * Establish the portfolio item defaults
      *
      * @return array defaults
      *
-     * @since  1.4.0
+     * @since  2.0.0
      */
     function defaults() {
         $defaults = array(
@@ -40,26 +52,27 @@ class Arconix_Portfolio {
     * Grab all portfolio items from the database and sets up their display.
     *
     * Supported Arguments
-    * - link =>  page, image
-    * - thumb => any built-in image size
-    * - full => any built-in image size (this setting is ignored of 'link' is set to 'page')
-    * - title => above, below or 'blank' ("yes" is converted to "above" for backwards compatibility)
+    * - link    => page, image
+    * - thumb   => any built-in image size
+    * - full    => any built-in image size (this setting is ignored of 'link' is set to 'page')
+    * - title   => above, below or 'blank' ("yes" is converted to "above" for backwards compatibility)
     * - display => content, excerpt (leave blank for nothing)
     * - heading => When displaying the 'feature' items in a row above the portfolio items, define the heading text for that section.
-    * - orderby => date or any other orderby param available. http://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters
-    * - order => ASC (ascending), DESC (descending)
-    * - terms => a 'feature' tag you want to filter on operator => 'IN', 'NOT IN' filter for the term tag above
+    * - orderby => date or any other orderby param available. {@see http://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters}
+    * - order   => ASC (ascending), DESC (descending)
+    * - terms   => a 'feature' tag you want to filter on operator => 'IN', 'NOT IN' filter for the term tag above
     *
     * 'Image' is the only officially supported link option. While linking to a page is possible, it may require additional coding
     * knowledge due to the fact that there are so many themes and nearly every one is different.
     * {@see http://arconixpc.com/2012/linking-portfolio-items-to-pages }
     *
-    * @param array $args
-    * @param bool $echo Determines whether the data is returned or echo'd
+    * @since    1.2.0
+    * @version  2.0.0
     *
-    * @since   1.2.0
-    * @version 1.4.0
+    * @param    array   $args
+    * @param    bool    $echo   Echo or return the data
     *
+    * @return   string          Unordered list of portfolio items all dressed up with images and hyperlinks
     */
     function loop( $args, $echo = false ) {
         // Get our default arguments
@@ -99,76 +112,71 @@ class Arconix_Portfolio {
 
         ob_start(); // start our buffer to be output at the end of the function
 
-
         // After all that build up, run our query
         $query = new WP_Query( apply_filters( 'arconix_portfolio_query', $qargs ) );
 
         if( $query->have_posts() ) :
 
-            // right now this function calls the list directly.
-            $this->arconix_portfolio_filter_list( $args );
+            $this->do_before_items( $args );
 
             while( $query->have_posts() ) : $query->the_post();
 
-                $this->arconix_portfolio_item( $args );
+                $this->do_item( $args );
 
             endwhile;
 
-            $this->arconix_portfolio_after_items( $args );
+            $this->do_after_items( $args );
 
         endif;
 
-    wp_reset_postdata();
+        wp_reset_postdata();
 
-
-    // Either echo or return the results
-    if( $echo )
-        echo ob_get_clean();
-    else
-        return ob_get_clean();
-    }
-
-    /**
-     * Runs after the items have been output
-     *
-     * @param  array   $args incoming arguments
-     * @param  boolean $echo return or echo the data
-     *
-     * @return string
-     *
-     * @since  1.4.0
-     */
-    function arconix_portfolio_after_items( $args, $echo = true ) {
-        ob_start();
-
-        echo '</ul>';
-
-
-        if ( $echo )
+        // Either echo or return the results
+        if( $echo == true )
             echo ob_get_clean();
         else
             return ob_get_clean();
     }
 
     /**
-     * Runs after we know there are portfolio items to loop through but before we actually
-     * loop through them
+     * Runs if there are portfolio items to loop through but before the loop is
+     * actually executed.
      *
-     * @param  array   $args the args pushed into the function (typically via shortcode)
-     * @param  boolean $echo echo or return the data
+     * @since  2.0.0
      *
-     * @return string        the image wrapped in a hyperlink
+     * @param  array    $args   the args pushed into the function (typically via shortcode)
+     * @param  bool     $echo   echo or return the data
      *
-     * @since  1.4.0
+     * @return string           the image wrapped in a hyperlink
      */
-    function arconix_portfolio_do_before_items( $args, $echo = true ) {
-        // FUNCTION IN DEVELOPMENT RIGHT NOW
+    function do_before_items( $args, $echo = false ) {
         ob_start();
 
-        do_action( 'arconix_portfolio_before_items' );
+        do_action( 'arconix_portfolio_before_items', $args );
 
         // Either echo or return the results
-        if ( $echo )
+        if ( $echo == true )
+            echo ob_get_clean();
+        else
+            return ob_get_clean();
+    }
+
+    /**
+     * Runs after the portfolio items have been output
+     *
+     * @since  2.0.0
+     *
+     * @param  array    $args   incoming arguments
+     * @param  bool     $echo   return or echo the data
+     *
+     * @return string
+     */
+    function do_after_items( $args, $echo = false ) {
+        ob_start();
+
+        do_action( 'arconix_portfolio_after_items', $args );
+
+        if ( $echo == true )
             echo ob_get_clean();
         else
             return ob_get_clean();
@@ -179,15 +187,15 @@ class Arconix_Portfolio {
      * by the query. If there are more than one, we create an unordered list to display
      * them.
      *
-     * @param  array   $terms the terms used to create the filter list
-     * @param  array   $args  the args pushed into the function (typically via shortcode)
-     * @param  boolean $echo  echo or return the data
+     * @since  2.0.0
      *
-     * @return string         the image wrapped in a hyperlink
+     * @param  array    $terms  the terms used to create the filter list
+     * @param  array    $args   the args pushed into the function (typically via shortcode)
+     * @param  bool     $echo   echo or return the data
      *
-     * @since  1.4.0
+     * @return string           An unordered list of "features" to power the filter functionality
      */
-    function arconix_portfolio_filter_list( $args, $echo = true ) {
+    function filter_list( $args, $echo = false ) {
         ob_start();
 
         $a = array(); // Var to hold our operate arguments
@@ -216,11 +224,8 @@ class Arconix_Portfolio {
         $a['orderby'] = $args['terms_orderby'];
         $a['order'] = $args['terms_order'];
 
-        // Allow a user to filter the terms list to modify or add their own parameters.
-        $a = apply_filters( 'arconix_portfolio_get_terms', $a );
-
-        // Get the tax terms only from the items in our query
-        $terms = get_terms( 'feature', $a );
+        // Get the tax terms only from the items in our query, allowing the user to filter the arguments
+        $terms = get_terms( 'feature', apply_filters( 'arconix_portfolio_get_terms', $a ) );
 
         // If we have multiple terms, then build our filter list
         if( count( $terms ) > 1 ) {
@@ -240,33 +245,68 @@ class Arconix_Portfolio {
             }
 
             echo '</ul>';
-
         }
 
-        echo '<ul class="arconix-portfolio-grid">';
-
-
-
-
         // Either echo or return the results
-        if ( $echo )
+        if ( $echo == true )
             echo ob_get_clean();
         else
             return ob_get_clean();
     }
 
+    /**
+     * Start the portfolio unordered list
+     *
+     * @since   2.0.0
+     *
+     * @param   bool    $echo   Echo or return the results
+     *
+     * @return  string          Begin the unordered portfolio list
+     */
+    function begin_list( $echo = false ) {
+        ob_start();
+
+        echo '<ul class="arconix-portfolio-grid">';
+
+        // Either echo or return the results
+        if ( $echo == true )
+            echo ob_get_clean();
+        else
+            return ob_get_clean();
+    }
+
+    /**
+     * Close the unordered portfolio list
+     *
+     * @since   2.0.0
+     *
+     * @param   bool    $echo   Echo or return results
+     *
+     * @return  string          Close the unordered portfolio list
+     */
+    function end_list( $echo = false ) {
+        ob_start();
+
+        echo '</ul>';
+
+        // Either echo or return the results
+        if ( $echo == true )
+            echo ob_get_clean();
+        else
+            return ob_get_clean();
+    }
 
     /**
      * Output the individual portfolio item. Runs inside the loop
      *
-     * @param  array   $args the args pushed into the function (typically via shortcode)
-     * @param  boolean $echo echo or return the data
+     * @since  2.0.0
      *
-     * @return string        the image wrapped in a hyperlink
+     * @param  array    $args   The args pushed into the function (typically via shortcode)
+     * @param  bool     $echo   Echo or return the results
      *
-     * @since  1.4.0
+     * @return string           The image wrapped in a hyperlink
      */
-    function arconix_portfolio_item( $args, $echo = true ) {
+    function do_item( $args, $echo = false ) {
         ob_start();
 
         $id = get_the_ID();
@@ -289,10 +329,8 @@ class Arconix_Portfolio {
         if( $args['title'] == "above" )
             echo '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
 
-
         // Outputs the image wrapped in the appropriate hyperlink
-        $this->arconix_portfolio_item_image( $args );
-
+        $this->portfolio_image( $args );
 
         // Below image Title output
         if( $args['title'] == "below" )
@@ -315,7 +353,7 @@ class Arconix_Portfolio {
         echo '</li>';
 
         // Either echo or return the results
-        if ( $echo )
+        if ( $echo == true )
             echo ob_get_clean();
         else
             return ob_get_clean();
@@ -325,14 +363,14 @@ class Arconix_Portfolio {
     /**
      * Handles the output of the portfolio item image including what link is fired
      *
-     * @param  array   $args the args pushed into the function (typically via shortcode)
-     * @param  boolean $echo echo or return the data
+     * @since  2.0.0
      *
-     * @return string        the image wrapped in a hyperlink
+     * @param  array    $args   the args pushed into the function (typically via shortcode)
+     * @param  bool     $echo   echo or return the data
      *
-     * @since  1.4.0
+     * @return string           the image wrapped in a hyperlink
      */
-    function arconix_portfolio_item_image( $args, $echo = true ) {
+    function portfolio_image( $args, $echo = false ) {
 
         ob_start();
 
@@ -405,10 +443,9 @@ class Arconix_Portfolio {
         }
 
         // Either echo or return the results
-        if ( $echo )
+        if ( $echo == true )
             echo ob_get_clean();
         else
             return ob_get_clean();
     }
-
 }
