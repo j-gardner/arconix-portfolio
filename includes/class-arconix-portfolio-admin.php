@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Defines and handles all backend plugin operation
  *
