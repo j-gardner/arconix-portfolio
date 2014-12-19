@@ -178,35 +178,35 @@ class Arconix_Portfolio_Admin {
      * @since 1.3.0
      */
     public function metaboxes( $meta_boxes ) {
-        $metabox = array(
-            'id'            => 'portfolio-setting',
-            'title'         => __( 'Portfolio Setting', 'acp' ),
-            'pages'         => array( 'portfolio' ),
-            'context'       => 'side',
-            'priority'      => 'default',
-            'show_names'    => false,
-            'fields'        => array(
-                array(
-                    'id'        => '_acp_link_type',
-                    'name'      => __( 'Select Link Type', 'acp' ),
-                    'type'      => 'select',
-                    'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
-                    'options'   => array(
-                        array( 'name' => 'Image',           'value' => 'image' ),
-                        array( 'name' => 'Page',            'value' => 'page' ),
-                        array( 'name' => 'External Link',   'value' => 'external' )
+        $meta_boxes['portfolio_settings'] =
+            apply_filters( 'arconix_portfolio_metabox', array(
+                'id'            => 'portfolio_settings',
+                'title'         => __( 'Portfolio Setting', 'acp' ),
+                'pages'         => array( 'portfolio' ),
+                'context'       => 'side',
+                'priority'      => 'default',
+                'show_names'    => false,
+                'fields'        => array(
+                    array(
+                        'id'        => '_acp_link_type',
+                        'name'      => __( 'Select Link Type', 'acp' ),
+                        'type'      => 'select',
+                        'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
+                        'options'   => array(
+                            array( 'name' => 'Image',           'value' => 'image' ),
+                            array( 'name' => 'Page',            'value' => 'page' ),
+                            array( 'name' => 'External Link',   'value' => 'external' )
+                        )
+                    ),
+                    array(
+                        'id'        => '_acp_link_value',
+                        'name'      => __( 'Optional Link', 'acp' ),
+                        'desc'      => __( 'If selected, enter the destination hyperlink', 'acp' ),
+                        'type'      => 'text'
                     )
-                ),
-                array(
-                    'id'        => '_acp_link_value',
-                    'name'      => __( 'Optional Link', 'acp' ),
-                    'desc'      => __( 'If selected, enter the destination hyperlink', 'acp' ),
-                    'type'      => 'text'
                 )
             )
         );
-
-        $meta_boxes[] = apply_filters( 'arconix_portfolio_metabox', $metabox );
 
         return $meta_boxes;
     }
