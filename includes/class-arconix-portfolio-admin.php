@@ -65,6 +65,9 @@ class Arconix_Portfolio_Admin {
         add_image_size( 'portfolio-large',              620, 9999 );
 
         add_shortcode( 'portfolio',                     array( $this, 'acp_portfolio_shortcode' ) );
+
+        // For use if Arconix Flexslider is active
+        add_filter( 'arconix_flexslider_slide_image_return',    array( $this, 'flexslider_image_return' ), 10, 4 );
     }
 
     /**
@@ -409,5 +412,47 @@ class Arconix_Portfolio_Admin {
         $p = new Arconix_Portfolio;
 
         return $p->loop( $atts );
+    }
+
+    /**
+     * Modify the Arconix Flexslider image information
+     *
+     * References the custom URL config set by the portfolio items
+     *
+     * @since   2.0.0
+     * @global  stdObj      $post           Standard WP Post object
+     * @param   string      $content        Existing image data
+     * @param   bool        $link_image     Wrap the image in a hyperlink to the permalink (false for basic image slider)
+     * @param   string      $image_size     The size of the image to display. Accepts any valid built-in or added WordPress image size
+     * @param   string      $caption        Caption to be displayed
+     * @return  string      $s              string | null Modified flexslider image or nothing if we're not on a portfolio CPT
+     */
+    public function flexslider_image_return( $content, $link_image, $image_size, $caption ) {
+        global $post;
+
+        // return early if we're not working with a portfolio item or we don't have a featured image
+        if ( $post->post_type != 'portfolio' || ! has_post_thumbnail() ) return;
+
+        $s = '<div class="arconix-slide-image-wrap">';
+
+        if ( $link_image == "true" || $link_image = 1 ) {
+            /*
+             * Return the hyperlinked portfolio image. Setting the 1st param to false
+             * forces the plugin to use the portfolio item's link type. Since we're not
+             * running as a result of the shortcode, there's no way to know if that has
+             * been configured
+             */
+            $p = new Arconix_Portfolio();
+            $s .= $p->portfolio_image ( false, $image_size, 'full' );
+        } else {
+            $id = get_the_ID();
+            $s .= get_the_post_thumbnail( $id, $image_size );
+        }
+        $f = new Arconix_FlexSlider();
+        $s .= $f->slide_caption( $caption );
+
+        $s .= '</div>';
+
+        return $s;
     }
 }
