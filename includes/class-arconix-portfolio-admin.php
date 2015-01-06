@@ -204,7 +204,7 @@ class Arconix_Portfolio_Admin {
                     array(
                         'id'        => '_acp_link_value',
                         'name'      => __( 'Optional Link', 'acp' ),
-                        'desc'      => __( 'If selected, enter the destination hyperlink', 'acp' ),
+                        'desc'      => __( 'If External Link was chosen above, enter the destination hyperlink', 'acp' ),
                         'type'      => 'text'
                     )
                 )
