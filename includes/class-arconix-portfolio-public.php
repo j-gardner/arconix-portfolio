@@ -149,11 +149,10 @@ class Arconix_Portfolio {
      * @return string   $s
      */
     function before_items( $args ) {
-        $s = '';
 
-        $s .= $this->filter_list( $args );
+        $s = $this->filter_list( $args );
 
-        $s .= $this->begin_list();
+        $s .= $this->begin_portfolio_grid();
 
         return apply_filters( 'arconix_portfolio_before_items', $s, $args );
     }
@@ -213,7 +212,7 @@ class Arconix_Portfolio {
      */
     function after_items( $args ) {
 
-        $s = $this->end_list();
+        $s = $this->end_portfolio_grid();
 
         return apply_filters( 'arconix_portfolio_before_items', $s, $args );
     }
@@ -288,7 +287,7 @@ class Arconix_Portfolio {
      *
      * @return  string          Begin the unordered portfolio list
      */
-    function begin_list() {
+    function begin_portfolio_grid() {
         return '<ul class="arconix-portfolio-grid">';
     }
 
@@ -378,7 +377,7 @@ class Arconix_Portfolio {
      *
      * @return  string          The closing unordered list html tag
      */
-    function end_list() {
+    function end_portfolio_grid() {
         return '</ul>';
     }
 }
