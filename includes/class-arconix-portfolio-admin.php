@@ -46,25 +46,25 @@ class Arconix_Portfolio_Admin {
         $this->dir = trailingslashit( plugin_dir_path( __FILE__ ) );
         $this->url = trailingslashit( plugin_dir_url( __FILE__ ) );
 
-        register_activation_hook( __FILE__,             array( $this, 'activation' ) );
-        register_deactivation_hook( __FILE__,           array( $this, 'deactivation' ) );
+        register_activation_hook( __FILE__,                     array( $this, 'activation' ) );
+        register_deactivation_hook( __FILE__,                   array( $this, 'deactivation' ) );
 
-        add_action( 'init',                             array( $this, 'content_types' ) );
-        add_action( 'manage_posts_custom_column',       array( $this, 'columns_data' ) );
-        add_action( 'wp_enqueue_scripts',               array( $this, 'scripts' ) );
-        add_action( 'admin_enqueue_scripts',            array( $this, 'admin_css' ) );
-        add_action( 'dashboard_glance_items',           array( $this, 'at_a_glance' ) );
-        add_action( 'wp_dashboard_setup',               array( $this, 'register_dashboard_widget' ) );
+        add_action( 'init',                                     array( $this, 'content_types' ) );
+        add_action( 'manage_posts_custom_column',               array( $this, 'columns_data' ) );
+        add_action( 'wp_enqueue_scripts',                       array( $this, 'scripts' ) );
+        add_action( 'admin_enqueue_scripts',                    array( $this, 'admin_css' ) );
+        add_action( 'dashboard_glance_items',                   array( $this, 'at_a_glance' ) );
+        add_action( 'wp_dashboard_setup',                       array( $this, 'register_dashboard_widget' ) );
 
-        add_filter( 'manage_portfolio_posts_columns',   array( $this, 'columns_filter' ) );
-        add_filter( 'post_updated_messages',            array( $this, 'updated_messages' ) );
-        add_filter( 'cmb_meta_boxes',                   array( $this, 'metaboxes' ) );
-        add_filter( 'widget_text',                      'do_shortcode' );
+        add_filter( 'manage_portfolio_posts_columns',           array( $this, 'columns_filter' ) );
+        add_filter( 'post_updated_messages',                    array( $this, 'updated_messages' ) );
+        add_filter( 'cmb_meta_boxes',                           array( $this, 'metaboxes' ) );
+        add_filter( 'widget_text',                              'do_shortcode' );
 
-        add_image_size( 'portfolio-thumb',              275, 200 );
-        add_image_size( 'portfolio-large',              620, 9999 );
+        add_image_size( 'portfolio-thumb',                      275, 200 );
+        add_image_size( 'portfolio-large',                      620, 9999 );
 
-        add_shortcode( 'portfolio',                     array( $this, 'acp_portfolio_shortcode' ) );
+        add_shortcode( 'portfolio',                             array( $this, 'acp_portfolio_shortcode' ) );
 
         // For use if Arconix Flexslider is active
         add_filter( 'arconix_flexslider_slide_image_return',    array( $this, 'flexslider_image_return' ), 10, 4 );
@@ -293,10 +293,11 @@ class Arconix_Portfolio_Admin {
                 the_excerpt();
                 break;
             case "portfolio_link":
-                echo get_post_meta( $post->ID, '_acp_link_type', true );
+                printf( '<div class="portfolio-link-type">%s</div>', get_post_meta( $post->ID, '_acp_link_type', true ) );
                 break;
         }
     }
+
 
     /**
      * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
