@@ -43,7 +43,7 @@ class Arconix_Portfolio {
     /**
      * Returns a filterable array of class defaults.
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @return  array    $defaults
      */
     function defaults() {
@@ -72,7 +72,7 @@ class Arconix_Portfolio {
     * {@see http://arconixpc.com/2012/linking-portfolio-items-to-pages }
     *
     * @since    1.2.0
-    * @version  2.0.0
+    * @version  1.4.0
     *
     * @param    array   $args   Incoming arguments
     * @param    bool    $echo   Echo or return the data
@@ -142,7 +142,7 @@ class Arconix_Portfolio {
      * Runs if there are portfolio items to loop through but before the loop is
      * actually executed.
      *
-     * @since  2.0.0
+     * @since  1.4.0
      *
      * @param  array    $args   Args pushed into the function (typically via shortcode)
      *
@@ -162,7 +162,7 @@ class Arconix_Portfolio {
      *
      * Output the item's title, the image and content if configued
      *
-     * @since  2.0.0
+     * @since  1.4.0
      *
      * @param  array    $args   The args pushed into the function (typically via shortcode)
      *
@@ -204,7 +204,7 @@ class Arconix_Portfolio {
     /**
      * Runs after the portfolio items have been output
      *
-     * @since  2.0.0
+     * @since  1.4.0
      *
      * @param  array    $args   incoming arguments
      *
@@ -224,7 +224,7 @@ class Arconix_Portfolio {
      * by the query. If there are more than one, we create an unordered list to display
      * them.
      *
-     * @since  2.0.0
+     * @since  1.4.0
      *
      * @param  array    $args   Args pushed into the function (typically via shortcode)
      *
@@ -283,7 +283,7 @@ class Arconix_Portfolio {
     /**
      * Start the portfolio unordered list
      *
-     * @since   2.0.0
+     * @since   1.4.0
      *
      * @return  string          Begin the unordered portfolio list
      */
@@ -294,7 +294,7 @@ class Arconix_Portfolio {
     /**
      * Handles the output of the portfolio item image including what link is fired
      *
-     * @since   2.0.0
+     * @since   1.4.0
      *
      * @param   string  $link   image | page - If not set at the shortcode level, will be assigned the item level setting
      * @param   string  $thumb  Image size of the thumbnail
@@ -334,7 +334,7 @@ class Arconix_Portfolio {
     /**
      * Portfolio title
      *
-     * @since   2.0.0
+     * @since   1.4.0
      *
      * @return  string          The portfolio title
      */
@@ -345,7 +345,7 @@ class Arconix_Portfolio {
     /**
      * Display the portfolio content
      *
-     * @since   2.0.0
+     * @since   1.4.0
      *
      * @param   string  $display    content | excerpt | none - What content should be displayed with this portfolio item
      *
@@ -373,7 +373,7 @@ class Arconix_Portfolio {
     /**
      * Close the unordered portfolio list
      *
-     * @since   2.0.0
+     * @since   1.4.0
      *
      * @return  string          The closing unordered list html tag
      */

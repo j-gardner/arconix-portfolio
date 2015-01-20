@@ -9,7 +9,7 @@ class Arconix_Portfolio_Admin {
     /**
      * The version of this plugin.
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @access  private
      * @var     string      $version    The vurrent version of this plugin.
      */
@@ -18,7 +18,7 @@ class Arconix_Portfolio_Admin {
     /**
      * The directory path to this plugin.
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @access  private
      * @var     string      $dir    The directory path to this plugin
      */
@@ -27,7 +27,7 @@ class Arconix_Portfolio_Admin {
     /**
      * The url path to this plugin.
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @access  private
      * @var     string      $url    The url path to this plugin
      */
@@ -37,7 +37,7 @@ class Arconix_Portfolio_Admin {
      * Initialize the class and set its properties.
      *
      * @since   1.2.0
-     * @version 2.0.0
+     * @version 1.4.0
      * @access  public
      * @param   string      $version    The version of this plugin.
      */
@@ -420,7 +420,7 @@ class Arconix_Portfolio_Admin {
      *
      * References the custom URL config set by the portfolio items
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @global  stdObj      $post           Standard WP Post object
      * @param   string      $content        Existing image data
      * @param   bool        $link_image     Wrap the image in a hyperlink to the permalink (false for basic image slider)

@@ -18,7 +18,7 @@ class Arconix_Portfolio_Gallery {
     /**
      * Stores the current version of the plugin.
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @access  private
      * @var     string      $version    Current plugin version
      */
@@ -27,7 +27,7 @@ class Arconix_Portfolio_Gallery {
     /**
      * The directory path to the plugin file's includes folder.
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @access  private
      * @var     string      $inc    The directory path to the includes folder
      */
@@ -37,10 +37,10 @@ class Arconix_Portfolio_Gallery {
      * Initialize the class and set its properties.
      *
      * @since   1.0.0
-     * @version 2.0.0
+     * @version 1.4.0
      */
     public function __construct() {
-        $this->version = '2.0.0';
+        $this->version = '1.4.0';
         $this->inc = trailingslashit( plugin_dir_path( __FILE__ ) . '/includes' );
         $this->load_dependencies();
         $this->load_admin();
@@ -51,7 +51,7 @@ class Arconix_Portfolio_Gallery {
     /**
      * Conditionally load the metabox class
      *
-     * @since   2.0.0
+     * @since   1.4.0
      */
     public function metabox_init() {
         if ( ! class_exists( 'cmb_Meta_Box' ) )
@@ -65,7 +65,7 @@ class Arconix_Portfolio_Gallery {
      * - Public provides front-end functionality
      * - Dashboard Glancer loads the helper class for the admin dashboard
      *
-     * @since   2.0.0
+     * @since   1.4.0
      */
     private function load_dependencies() {
         require_once( plugin_dir_path( __FILE__ ) . '/includes/class-arconix-portfolio-admin.php' );
@@ -78,7 +78,7 @@ class Arconix_Portfolio_Gallery {
     /**
      * Load the Administration portion
      *
-     * @since   2.0.0
+     * @since   1.4.0
      */
     private function load_admin() {
         new Arconix_Portfolio_Admin( $this->get_version() );
@@ -87,7 +87,7 @@ class Arconix_Portfolio_Gallery {
     /**
      * Get the current version of the plugin
      *
-     * @since   2.0.0
+     * @since   1.4.0
      * @return  string  Plugin current version
      */
     public function get_version() {
