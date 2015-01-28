@@ -304,8 +304,7 @@ class Arconix_Portfolio {
      */
     function portfolio_image( $link, $thumb, $full ) {
         $id = get_the_ID();
-        $s = '';
-        $extra_class = apply_filters( 'arconix_portfolio_external_link_class', '_return_empty_string' );
+        $extra_class = apply_filters( 'arconix_portfolio_external_link_class', '' );
 
         if ( ! $link )
             $link = get_post_meta( $id, '_acp_link_type', true );
@@ -324,7 +323,7 @@ class Arconix_Portfolio {
                 break;
         }
 
-        $s .= '<a class="portfolio-' . $link . ' ' . $extra_class . '" href="' . $url . '">';
+        $s = '<a class="portfolio-' . $link . ' ' . $extra_class . '" href="' . $url . '">';
         $s .= get_the_post_thumbnail( $id, $thumb );
         $s .= '</a>';
 
