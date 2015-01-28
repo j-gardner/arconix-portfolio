@@ -436,7 +436,7 @@ class Arconix_Portfolio_Admin {
 
         $s = '<div class="arconix-slide-image-wrap">';
 
-        if ( $link_image == "true" || $link_image = 1 ) {
+        if ( $link_image === 'true' || $link_image === 1 ) {
             /*
              * Return the hyperlinked portfolio image. Setting the 1st param to false
              * forces the plugin to use the portfolio item's link type. Since we're not
