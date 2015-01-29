@@ -4,7 +4,7 @@
  * Plugin URI: http://arconixpc.com/plugins/arconix-portfolio
  * Description: Portfolio Gallery provides an easy way to display your portfolio on your website
  *
- * Version: 1.3.2
+ * Version: 1.4.0
  *
  * Author: John Gardner
  * Author URI: http://arconixpc.com
@@ -68,8 +68,8 @@ class Arconix_Portfolio_Gallery {
      * @since   1.4.0
      */
     private function load_dependencies() {
-        require_once( plugin_dir_path( __FILE__ ) . '/includes/class-arconix-portfolio-admin.php' );
-        require_once( plugin_dir_path( __FILE__ ) . '/includes/class-arconix-portfolio-public.php' );
+        require_once( $this->inc . 'class-arconix-portfolio-admin.php' );
+        require_once( $this->inc . 'class-arconix-portfolio-public.php' );
 
         if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
             require_once( $this->inc . 'class-gamajo-dashboard-glancer.php' );

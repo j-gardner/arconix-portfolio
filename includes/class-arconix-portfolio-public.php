@@ -18,9 +18,9 @@ class Arconix_Portfolio {
     /**
      * Constructor
      *
-     * Adds the appropriate functions to the appropriate hooks
+     * Populates the $defaults var
      *
-     * @todo test populating add_action() items through the construct.
+     * @since   1.4.0
      */
     function __construct() {
         $this->defaults = array(
@@ -28,6 +28,7 @@ class Arconix_Portfolio {
             'thumb'             => 'portfolio-thumb',
             'full'              => 'portfolio-large',
             'title'             => 'above',
+            'title_link'        => 'false',
             'display'           => '',
             'heading'           => 'Display',
             'orderby'           => 'date',
@@ -53,19 +54,23 @@ class Arconix_Portfolio {
    /**
     * Return Porfolio Content
     *
-    * Grab all portfolio items from the database and sets up their display.
+    * Grab all portfolio items from the database and sets up their display. Accepts an array of arguments (see $defaults)
     *
     * Supported Arguments
-    * - link    => page, image
-    * - thumb   => any built-in image size
-    * - full    => any built-in image size (this setting is ignored of 'link' is set to 'page')
-    * - title   => above, below or 'blank' ("yes" is converted to "above" for backwards compatibility)
-    * - display => content, excerpt (leave blank for nothing)
-    * - heading => When displaying the 'feature' items in a row above the portfolio items, define the heading text for that section.
-    * - orderby => date or any other orderby param available. {@see http://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters}
-    * - order   => ASC (ascending), DESC (descending)
-    * - terms   => a 'feature' tag you want to filter on
-    * - operator => 'IN', 'NOT IN' filter for the terms tag above
+    * - link            => page, image
+    * - thumb           => any built-in image size
+    * - full            => any built-in image size (this setting is ignored of 'link' is set to 'page')
+    * - title           => above, below or 'blank' ("yes" is converted to "above" for backwards compatibility)
+    * - title_link      => true | false wrap the portfolio title in the same hyperlink as the image
+    * - display         => content, excerpt (leave blank for nothing)
+    * - heading         => When displaying the 'feature' items in a row above the portfolio items, define the heading text for that section.
+    * - orderby         => date or any other orderby param available. {@see http://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters}
+    * - order           => ASC | DESC
+    * - posts_per_page  => limit how many portfolio items are returned
+    * - terms_orderby   => name or any other orderby param available. {@see http://codex.wordpress.org/Class_Reference/WP_Query#Order_.26_Orderby_Parameters}
+    * - terms_order     => ASC | DESC
+    * - terms           => a 'feature' tag you want to filter on
+    * - operator        => 'IN', 'NOT IN' filter for the terms tag above
     *
     * 'Image' is the only officially supported link option. While linking to a page is possible, it may require additional coding
     * knowledge due to the fact that there are so many themes and nearly every one is different.
@@ -77,7 +82,7 @@ class Arconix_Portfolio {
     * @param    array   $args   Incoming arguments
     * @param    bool    $echo   Echo or return the data
     *
-    * @return   string  $s      Unordered list of portfolio items all dressed up with images and hyperlinks
+    * @return   string          Unordered list of portfolio items all dressed up with images and hyperlinks
     */
     function loop( $args, $echo = false ) {
         // Merge incoming args with the function defaults
@@ -112,7 +117,7 @@ class Arconix_Portfolio {
 
         $s = ''; // our return container
 
-        // After all that build up, run our query
+        // Run our Query
         $query = new WP_Query( apply_filters( 'arconix_portfolio_query', $qargs ) );
 
         if( $query->have_posts() ) :
@@ -139,18 +144,18 @@ class Arconix_Portfolio {
     }
 
     /**
-     * Runs if there are portfolio items to loop through but before the loop is
-     * actually executed.
+     * Runs if there are portfolio items to loop through but before the items are output.
+     *
+     * Outputs the features list (if the 'feature' taxonomy is used) and the opening <ul> tag
      *
      * @since  1.4.0
      *
      * @param  array    $args   Args pushed into the function (typically via shortcode)
      *
-     * @return string   $s
+     * @return string
      */
     function before_items( $args ) {
-
-        $s = $this->filter_list( $args );
+        $s = $this->get_filter_list( $args );
 
         $s .= $this->begin_portfolio_grid();
 
@@ -160,23 +165,21 @@ class Arconix_Portfolio {
     /**
      * Creates the individual portfolio item.
      *
-     * Output the item's title, the image and content if configued
+     * Main item wrapper. Returns each portfolio item, its title and content if available
      *
      * @since  1.4.0
      *
      * @param  array    $args   The args pushed into the function (typically via shortcode)
      *
-     * @return string   $s      The image wrapped in a hyperlink
+     * @return string           The image wrapped in a hyperlink
      */
     function item( $args ) {
         // Get the terms list
         $id = get_the_ID();
         $get_the_terms = get_the_terms( $id, 'feature' );
 
-        $s = '';
-
         // Add each term for a given portfolio item as a data type so it can be filtered by Quicksand
-        $s .= '<li data-id="id-' . $id . '" data-type="';
+        $s = '<li data-id="id-' . $id . '" data-type="';
 
             if ( $get_the_terms ) {
                 foreach ( $get_the_terms as $term )
@@ -186,15 +189,15 @@ class Arconix_Portfolio {
         $s .= '">';
 
         // Above image Title output
-        if( $args['title'] == "above" ) $s .= $this->portfolio_title();
+        if( $args['title'] == "above" ) $s .= $this->get_portfolio_title( $args['title_link'], $args['link'], $args['full'] );
 
         // Outputs the image wrapped in the appropriate hyperlink
-        $s .= $this->portfolio_image( $args['link'], $args['thumb'], $args['full'] );
+        $s .= $this->get_portfolio_image( $args['link'], $args['thumb'], $args['full'] );
 
         // Below image Title output
-        if( $args['title'] == "below" ) $s .= $this->portfolio_title();
+        if( $args['title'] == "below" ) $s .= $this->get_portfolio_title( $args['title_link'], $args['link'], $args['full'] );
 
-        $s .= $this->portfolio_content( $args['display'] );
+        $s .= $this->get_portfolio_content( $args['display'] );
 
         $s .= '</li>';
 
@@ -202,16 +205,17 @@ class Arconix_Portfolio {
     }
 
     /**
-     * Runs after the portfolio items have been output
+     * Runs after the portfolio items have been output.
+     *
+     * Returns the closing <ul> tag, but accepts the main arguments array so it can be filtered if need be
      *
      * @since  1.4.0
      *
      * @param  array    $args   incoming arguments
      *
-     * @return string   $s
+     * @return string
      */
     function after_items( $args ) {
-
         $s = $this->end_portfolio_grid();
 
         return apply_filters( 'arconix_portfolio_before_items', $s, $args );
@@ -228,9 +232,9 @@ class Arconix_Portfolio {
      *
      * @param  array    $args   Args pushed into the function (typically via shortcode)
      *
-     * @return string   $s      An unordered list of "features" to power the filter functionality
+     * @return string           An unordered list of "features" to power the filter functionality
      */
-    function filter_list( $args ) {
+    function get_filter_list( $args ) {
         $s = '';
         $a = array(); // Var to hold our operate arguments
 
@@ -300,11 +304,88 @@ class Arconix_Portfolio {
      * @param   string  $thumb  Image size of the thumbnail
      * @param   string  $full   Image size of the full image (ignored if linking to a page or external site)
      *
-     * @return  string  $s      Image wrapped in an appropriate hyperlink
+     * @return  string          Image wrapped in an appropriate hyperlink
      */
-    function portfolio_image( $link, $thumb, $full ) {
+    function get_portfolio_image( $link, $thumb, $full ) {
         $id = get_the_ID();
         $extra_class = apply_filters( 'arconix_portfolio_external_link_class', '' );
+        $url = $this->get_portfolio_hyperlink( $link, $full );
+
+        $s = '<a class="portfolio-' . $link . ' ' . $extra_class . '" href="' . $url . '">';
+        $s .= get_the_post_thumbnail( $id, $thumb );
+        $s .= '</a>';
+
+        return $s;
+    }
+
+    /**
+     * Get the Portfolio title
+     *
+     * @since   1.4.0
+     *
+     * @param   bool    $is_link    true | false - Wrap the portfolio title in a hyperlink
+     * @param   string  $link       image | page | external - Where the hyperlink will point to (ignored if $is_link is false)
+     * @param   string  $full       larger image size (ignored if $is_link is false or $link is not 'image')
+     * @return  string              The portfolio title
+     */
+    function get_portfolio_title( $is_link, $link, $full ) {
+        $s = '<div class="arconix-portfolio-title">';
+
+        if ( $is_link === 'true' )
+            $s .= '<a href="' . $this->get_portfolio_hyperlink( $link, $full) . '">';
+
+        $s .= get_the_title();
+
+        if ( $is_link === 'true' )
+            $s .= '</a>';
+
+        $s .= '</div>';
+
+        return apply_filters( 'arconix_portfolio_item_title', $s, $is_link, $link );
+    }
+
+    /**
+     * Display the portfolio content
+     *
+     * @since   1.4.0
+     *
+     * @param   string  $display    content | excerpt | none - What content should be displayed with this portfolio item
+     *
+     * @return  string              Early if set to none, otherwise the content or excerpt
+     */
+    function get_portfolio_content( $display ) {
+        switch( $display ) {
+            case "content" :
+                return '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
+                break;
+
+            case "excerpt" :
+                return '<div class="arconix-portfolio-text">' . get_the_excerpt() . '</div>';
+                break;
+
+            default : // If it's anything else, return nothing.
+                return;
+                break;
+        }
+
+    }
+
+    /**
+     * Get the proper portfolio hyperlink
+     *
+     * Based on what's set at the shortcode or portfolio item level, return the
+     * correct URL for the correct scenario. When 'image' is the destination, the
+     * $full argument is used to note the larger image size determined by the user
+     *
+     * @since   1.4.0
+     *
+     * @param   string  $link   image | page | external - If not set at the shortcode level, will be assigned the item level setting
+     * @param   string  $full   Image size of the full image (ignored not linking to an image)
+     *
+     * @return  string          Returns the proper portfolio url
+     */
+    function get_portfolio_hyperlink( $link, $full ) {
+        $id = get_the_ID();
 
         if ( ! $link )
             $link = get_post_meta( $id, '_acp_link_type', true );
@@ -323,50 +404,7 @@ class Arconix_Portfolio {
                 break;
         }
 
-        $s = '<a class="portfolio-' . $link . ' ' . $extra_class . '" href="' . $url . '">';
-        $s .= get_the_post_thumbnail( $id, $thumb );
-        $s .= '</a>';
-
-        return $s;
-    }
-
-    /**
-     * Portfolio title
-     *
-     * @since   1.4.0
-     *
-     * @return  string          The portfolio title
-     */
-    function portfolio_title() {
-        return '<div class="arconix-portfolio-title">' . get_the_title() . '</div>';
-    }
-
-    /**
-     * Display the portfolio content
-     *
-     * @since   1.4.0
-     *
-     * @param   string  $display    content | excerpt | none - What content should be displayed with this portfolio item
-     *
-     * @return  string  $s          Early if set to none, otherwise the content or excerpt
-     */
-    function portfolio_content( $display ) {
-
-        switch( $display ) {
-            case "content" :
-                $s .= '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
-                break;
-
-            case "excerpt" :
-                $s .= '<div class="arconix-portfolio-text">' . get_the_excerpt() . '</div>';
-                break;
-
-            default : // If it's anything else, return nothing.
-                return;
-                break;
-        }
-
-        return $s;
+        return $url;
     }
 
     /**

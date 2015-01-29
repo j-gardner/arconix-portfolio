@@ -444,7 +444,7 @@ class Arconix_Portfolio_Admin {
              * been configured
              */
             $p = new Arconix_Portfolio();
-            $s .= $p->portfolio_image ( false, $image_size, 'full' );
+            $s .= $p->get_portfolio_image ( false, $image_size, 'full' );
         } else {
             $id = get_the_ID();
             $s .= get_the_post_thumbnail( $id, $image_size );
