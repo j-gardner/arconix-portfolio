@@ -45,22 +45,25 @@ class Arconix_Portfolio_Admin {
         $this->version = $version;
         $this->dir = trailingslashit( plugin_dir_path( __FILE__ ) );
         $this->url = trailingslashit( plugin_dir_url( __FILE__ ) );
+        $this->init();
+    }
 
-        register_activation_hook( __FILE__,                     array( $this, 'activation' ) );
-        register_deactivation_hook( __FILE__,                   array( $this, 'deactivation' ) );
-
-        add_action( 'init',                                     array( $this, 'content_types' ) );
+    /**
+     * Init the Admin side
+     *
+     * Loads all actions and filters to be used.
+     *
+     * @since   1.4.0
+     */
+    public function init() {
         add_action( 'manage_posts_custom_column',               array( $this, 'columns_data' ) );
         add_action( 'wp_enqueue_scripts',                       array( $this, 'scripts' ) );
         add_action( 'admin_enqueue_scripts',                    array( $this, 'admin_css' ) );
-        add_action( 'dashboard_glance_items',                   array( $this, 'at_a_glance' ) );
-        add_action( 'wp_dashboard_setup',                       array( $this, 'register_dashboard_widget' ) );
-
         add_action( 'admin_print_scripts-post-new.php',         array( $this, 'admin_scripts' ), 11 );
         add_action( 'admin_print_scripts-post.php',             array( $this, 'admin_scripts' ), 11 );
+        add_action( 'wp_dashboard_setup',                       array( $this, 'register_dashboard_widget' ) );
+
         add_filter( 'manage_portfolio_posts_columns',           array( $this, 'columns_filter' ) );
-        add_filter( 'post_updated_messages',                    array( $this, 'updated_messages' ) );
-        add_filter( 'cmb_meta_boxes',                           array( $this, 'metaboxes' ) );
         add_filter( 'widget_text',                              'do_shortcode' );
 
         add_image_size( 'portfolio-thumb',                      275, 200 );
@@ -73,194 +76,12 @@ class Arconix_Portfolio_Admin {
     }
 
     /**
-     * Runs on Plugin Activation
-     * Registers our Post Type and Taxonomy
-     *
-     * @since  1.2.0
-     */
-    public function activation() {
-        $this->content_types();
-        flush_rewrite_rules();
-    }
-
-    /**
-     * Runs on Plugin Deactivation
-     *
-     * @since  1.2.0
-     */
-    public function deactivation() {
-        flush_rewrite_rules();
-    }
-
-    /**
-     * Register the post_type and taxonomy
-     *
-     * @since 1.2.0
-     */
-    public function content_types() {
-        $defaults = $this->defaults();
-        register_post_type( $defaults['post_type']['slug'], $defaults['post_type']['args'] );
-        register_taxonomy( $defaults['taxonomy']['slug'], $defaults['post_type']['slug'],  $defaults['taxonomy']['args'] );
-    }
-
-    /**
-     * Define the defaults used in the registration of the post type and taxonomy
-     *
-     * @return  array $defaults
-     *
-     * @since   1.2.0
-     * @version 1.4.0
-     */
-    public function defaults() {
-        // Establishes plugin registration defaults for post type and taxonomy
-        $defaults = array(
-            'post_type' => array(
-                'slug' => 'portfolio',
-                'args' => array(
-                    'labels' => array(
-                        'name'                  => __( 'Portfolio',                             'acp' ),
-                        'singular_name'         => __( 'Portfolio',                             'acp' ),
-                        'add_new'               => __( 'Add New',                               'acp' ),
-                        'add_new_item'          => __( 'Add New Portfolio Item',                'acp' ),
-                        'edit'                  => __( 'Edit',                                  'acp' ),
-                        'edit_item'             => __( 'Edit Portfolio Item',                   'acp' ),
-                        'new_item'              => __( 'New Item',                              'acp' ),
-                        'view'                  => __( 'View Portfolio',                        'acp' ),
-                        'view_item'             => __( 'View Portfolio Item',                   'acp' ),
-                        'search_items'          => __( 'Search Portfolio',                      'acp' ),
-                        'not_found'             => __( 'No portfolio items found',              'acp' ),
-                        'not_found_in_trash'    => __( 'No portfolio items found in Trash',     'acp' )
-                    ),
-                    'public'            => true,
-                    'query_var'         => true,
-                    'menu_position'     => 20,
-                    'menu_icon'         => 'dashicons-portfolio',
-                    'has_archive'       => false,
-                    'supports'          => array( 'title', 'editor', 'thumbnail' ),
-                    'rewrite'           => array( 'slug' => 'portfolio', 'with_front' => false )
-                )
-            ),
-            'taxonomy' => array(
-                'slug' => 'feature',
-                'args' => array(
-                    'labels' => array(
-                        'name'                          => __( 'Features',                              'acp' ),
-                        'singular_name'                 => __( 'Feature',                               'acp' ),
-                        'search_items'                  => __( 'Search Features',                       'acp' ),
-                        'popular_items'                 => __( 'Popular Features',                      'acp' ),
-                        'all_items'                     => __( 'All Features',                          'acp' ),
-                        'parent_item'                   => null,
-                        'parent_item_colon'             => null,
-                        'edit_item'                     => __( 'Edit Feature' ,                         'acp' ),
-                        'update_item'                   => __( 'Update Feature',                        'acp' ),
-                        'add_new_item'                  => __( 'Add New Feature',                       'acp' ),
-                        'new_item_name'                 => __( 'New Feature Name',                      'acp' ),
-                        'separate_items_with_commas'    => __( 'Separate features with commas',         'acp' ),
-                        'add_or_remove_items'           => __( 'Add or remove features',                'acp' ),
-                        'choose_from_most_used'         => __( 'Choose from the most used features',    'acp' ),
-                        'menu_name'                     => __( 'Features',                              'acp' ),
-                    ),
-                    'hierarchical'              => false,
-                    'show_ui'                   => true,
-                    'show_admin_column'         => true,
-                    'update_count_callback'     => '_update_post_term_count',
-                    'query_var'                 => true,
-                    'rewrite'                   => array( 'slug' => 'feature' )
-                )
-            )
-        );
-
-        return apply_filters( 'arconix_portfolio_defaults', $defaults );
-    }
-
-    /**
-     * Create the post type metabox
-     *
-     * @param array $meta_boxes
-     *
-     * @return array $meta_boxes
-     *
-     * @since 1.3.0
-     */
-    public function metaboxes( $meta_boxes ) {
-        $meta_boxes['portfolio_settings'] =
-            apply_filters( 'arconix_portfolio_metabox', array(
-                'id'            => 'portfolio_settings',
-                'title'         => __( 'Portfolio Setting', 'acp' ),
-                'pages'         => array( 'portfolio' ),
-                'context'       => 'side',
-                'priority'      => 'default',
-                'show_names'    => false,
-                'fields'        => array(
-                    array(
-                        'id'        => '_acp_link_type',
-                        'name'      => __( 'Select Link Type', 'acp' ),
-                        'type'      => 'select',
-                        'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
-                        'options'   => array(
-                            array( 'name' => 'Image',           'value' => 'image' ),
-                            array( 'name' => 'Page',            'value' => 'page' ),
-                            array( 'name' => 'External Link',   'value' => 'external' )
-                        )
-                    ),
-                    array(
-                        'id'        => '_acp_link_value',
-                        'name'      => __( 'External Link', 'acp' ),
-                        'desc'      => __( 'Enter the destination hyperlink', 'acp' ),
-                        'type'      => 'text'
-                    )
-                )
-            )
-        );
-
-        return $meta_boxes;
-    }
-
-    /**
-     * Correct messages when Portfolio post type is saved
-     *
-     * @global stdObject    $post
-     * @global int          $post_ID
-     * @param  array        $messages
-     *
-     * @return array        updated messages
-     *
-     * @since   0.9.0
-     * @version 1.4.0
-     */
-    public function updated_messages( $messages ) {
-        global $post, $post_ID;
-        $post_type = get_post_type( $post_ID );
-
-        $obj = get_post_type_object( $post_type );
-        $singular = $obj->labels->singular_name;
-
-        $messages[$post_type] = array(
-            0  => '', // Unused. Messages start at index 1.
-            1  => sprintf( __( $singular . ' updated. <a href="%s">View ' . strtolower( $singular ) . '</a>' ), esc_url( get_permalink( $post_ID ) ) ),
-            2  => __( 'Custom field updated.' ),
-            3  => __( 'Custom field deleted.' ),
-            4  => __( $singular . ' updated.' ),
-            5  => isset( $_GET['revision'] ) ? sprintf( __( $singular . ' restored to revision from %s' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-            6  => sprintf( __( $singular . ' published. <a href="%s">View ' . strtolower( $singular ) . '</a>' ), esc_url( get_permalink( $post_ID ) ) ),
-            7  => __( 'Page saved.' ),
-            8  => sprintf( __( $singular . ' submitted. <a target="_blank" href="%s">Preview ' . strtolower( $singular ) . '</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
-            9  => sprintf( __( $singular . ' scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview ' . strtolower( $singular ) . '</a>' ), date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink( $post_ID ) ) ),
-            10 => sprintf( __( $singular . ' draft updated. <a target="_blank" href="%s">Preview ' . strtolower( $singular ) . '</a>' ), esc_url( add_query_arg( 'preview', 'true', get_permalink( $post_ID ) ) ) ),
-        );
-
-        return $messages;
-    }
-
-    /**
      * Filter the columns on the admin screen and define our own
-     *
-     * @param    array $columns
-     *
-     * @return   array $soumns
      *
      * @since    0.9.0
      * @version  1.4.0
+     * @param    array $columns
+     * @return   array $soumns
      */
     public function columns_filter ( $columns ) {
         $col_img = array( 'portfolio_thumbnail' => __( 'Image', 'acp' ) );
@@ -277,12 +98,10 @@ class Arconix_Portfolio_Admin {
     /**
      * Filter the data that shows up in the columns we defined above
      *
-     * @global  stdObject $post
-     *
-     * @param  object $column
-     *
-     * @since  0.9.0
-     * @version  1.2.0
+     * @since   0.9.0
+     * @version 1.2.0
+     * @global  stdObject   $post
+     * @param   array       $column
      */
     public function columns_data( $column ) {
         global $post;
@@ -300,7 +119,6 @@ class Arconix_Portfolio_Admin {
         }
     }
 
-
     /**
      * Load the plugin scripts. If the css file is present in the theme directory, it will be loaded instead,
      * allowing for an easy way to override the default template. If you'd like to remove the CSS or JS entirely,
@@ -313,7 +131,7 @@ class Arconix_Portfolio_Admin {
      */
     public function scripts() {
         // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
-        WP_DEBUG === true ? $prefix = '.min' : $prefix = '';
+        SCRIPT_DEBUG === true ? $prefix = '.min' : $prefix = '';
 
         wp_register_script( 'jquery-quicksand', $this->url . 'js/jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
         wp_register_script( 'jquery-easing', $this->url . 'js/jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
@@ -340,6 +158,12 @@ class Arconix_Portfolio_Admin {
 
     }
 
+    /**
+     * Load javascript on the portfolio post admin screen
+     *
+     * @since   1.4.0
+     * @global  string  $post_type  Post Type being manipulated
+     */
     public function admin_scripts() {
         global $post_type;
         if( 'portfolio' == $post_type )
@@ -398,20 +222,10 @@ class Arconix_Portfolio_Admin {
     }
 
     /**
-     * Add the Portfolio post type and Feature taxonomy to the WP 3.8 "At a Glance" dashboard
-     *
-     * @since 1.4.0
-     */
-    public function at_a_glance() {
-        $glancer = new Gamajo_Dashboard_Glancer;
-        $glancer->add( 'portfolio' );
-    }
-
-    /**
      * Portfolio Shortcode
      *
-     * @param   array  $atts
-     * @param   string $content
+     * @param   array   $atts
+     * @param   string  $content
      * @since   0.9
      * @version 1.3.1
      */

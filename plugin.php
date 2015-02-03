@@ -43,45 +43,41 @@ class Arconix_Portfolio_Gallery {
         $this->version = '1.4.0';
         $this->inc = trailingslashit( plugin_dir_path( __FILE__ ) . '/includes' );
         $this->load_dependencies();
-        $this->load_admin();
+        $this->launch();
 
-        add_action( 'init', array( $this, 'metabox_init' ), 9999 );
-    }
 
-    /**
-     * Conditionally load the metabox class
-     *
-     * @since   1.4.0
-     */
-    public function metabox_init() {
-        if ( ! class_exists( 'cmb_Meta_Box' ) )
-            require_once( $this->inc . 'metabox/init.php');
     }
 
     /**
      * Load the required dependencies for the plugin.
      *
      * - Admin loads the backend functionality
+     * - Content Type registers the post_type and taxonomy
+     * - Metaboxes loads the custom metabox
      * - Public provides front-end functionality
      * - Dashboard Glancer loads the helper class for the admin dashboard
      *
      * @since   1.4.0
      */
     private function load_dependencies() {
-        require_once( $this->inc . 'class-arconix-portfolio-admin.php' );
-        require_once( $this->inc . 'class-arconix-portfolio-public.php' );
+        require_once( $this->inc . 'class-admin.php' );
+        require_once( $this->inc . 'class-content-type.php' );
+        require_once( $this->inc . 'class-metaboxes.php' );
+        require_once( $this->inc . 'class-public.php' );
 
         if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
             require_once( $this->inc . 'class-gamajo-dashboard-glancer.php' );
     }
 
     /**
-     * Load the Administration portion
+     * Load all the necessary classes
      *
      * @since   1.4.0
      */
-    private function load_admin() {
+    private function launch() {
         new Arconix_Portfolio_Admin( $this->get_version() );
+        new Arconix_Portfolio_Content_Type();
+        new Arconix_Portfolio_Metaboxes();
     }
 
     /**
