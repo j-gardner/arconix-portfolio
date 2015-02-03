@@ -56,6 +56,8 @@ class Arconix_Portfolio_Admin {
         add_action( 'dashboard_glance_items',                   array( $this, 'at_a_glance' ) );
         add_action( 'wp_dashboard_setup',                       array( $this, 'register_dashboard_widget' ) );
 
+        add_action( 'admin_print_scripts-post-new.php',         array( $this, 'admin_scripts' ), 11 );
+        add_action( 'admin_print_scripts-post.php',             array( $this, 'admin_scripts' ), 11 );
         add_filter( 'manage_portfolio_posts_columns',           array( $this, 'columns_filter' ) );
         add_filter( 'post_updated_messages',                    array( $this, 'updated_messages' ) );
         add_filter( 'cmb_meta_boxes',                           array( $this, 'metaboxes' ) );
@@ -203,8 +205,8 @@ class Arconix_Portfolio_Admin {
                     ),
                     array(
                         'id'        => '_acp_link_value',
-                        'name'      => __( 'Optional Link', 'acp' ),
-                        'desc'      => __( 'If External Link was chosen above, enter the destination hyperlink', 'acp' ),
+                        'name'      => __( 'External Link', 'acp' ),
+                        'desc'      => __( 'Enter the destination hyperlink', 'acp' ),
                         'type'      => 'text'
                     )
                 )
@@ -336,6 +338,12 @@ class Arconix_Portfolio_Admin {
                 wp_enqueue_style( 'arconix-portfolio', $this->url . 'css/arconix-portfolio.css', false, $this->version );
         }
 
+    }
+
+    public function admin_scripts() {
+        global $post_type;
+        if( 'portfolio' == $post_type )
+            wp_enqueue_script( 'arconix-portfolio-admin-js', $this->url . 'js/admin.js', array( 'jquery' ), $this->version, true );
     }
 
     /**
