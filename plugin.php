@@ -44,8 +44,6 @@ class Arconix_Portfolio_Gallery {
         $this->inc = trailingslashit( plugin_dir_path( __FILE__ ) . '/includes' );
         $this->load_dependencies();
         $this->launch();
-
-
     }
 
     /**
