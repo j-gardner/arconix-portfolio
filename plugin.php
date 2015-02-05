@@ -58,10 +58,10 @@ class Arconix_Portfolio_Gallery {
      * @since   1.4.0
      */
     private function load_dependencies() {
-        require_once( $this->inc . 'class-admin.php' );
-        require_once( $this->inc . 'class-content-type.php' );
-        require_once( $this->inc . 'class-metaboxes.php' );
-        require_once( $this->inc . 'class-public.php' );
+        require_once( $this->inc . 'class-arconix-portfolio-admin.php' );
+        require_once( $this->inc . 'class-arconix-portfolio-content-type.php' );
+        require_once( $this->inc . 'class-arconix-portfolio-metaboxes.php' );
+        require_once( $this->inc . 'class-arconix-portfolio-public.php' );
 
         if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
             require_once( $this->inc . 'class-gamajo-dashboard-glancer.php' );
