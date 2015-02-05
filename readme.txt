@@ -4,7 +4,7 @@ Donate link: http://arcnx.co/acpdonation
 Tags: arconix, portfolio, quicksand, portfolio gallery
 Requires at least: 3.8
 Tested up to: 4.1
-Stable tag: 1.3.2
+Stable tag: 1.4.0
 License: GPLv2 or later
 
 A powerful, easy and attractive way to display your recent work on your website
@@ -30,7 +30,7 @@ Like all good software there are additional ways to customize the look and behav
 * Custom Taxonomy called "Features" allows you to "tag" your portfolio items which creates a filter list for a unique and practical way of presenting that info to your visitors
 * jQuery Quicksand for filtering animation (when using the 'features' taxonomy) shows and hides your different portfolio items
 * Individually set hyperlinks on portfolio items -- link to the portfolio item's page, a different/larger version of the portfolio image or even link to another web site entirely (perfect for client sites, YouTube or Vimeo videos, etc...). Mix and match to meet your individual needs.
-* Supports upgrade-safe CSS changes -- Copy the CSS file from my plugin to your theme and the plugin will load your file in place of mine ensuring no conflicts and no worrying about updates overwriting customizations.
+* Supports upgrade-safe CSS changes -- Copy the CSS file from the plugin directory to your theme and the plugin will load your file instead, ensuring no conflicts and no worrying about future updates overwriting customizations.
 
 = Use =
 
@@ -40,7 +40,7 @@ Add the [portfolio] shortcode to your post, page or other content area. Customiz
 [Live Demo](http://demo.arconixpc.com/arconix-portfolio)
 
 = Help =
-Feel free to open an [issue on GitHub](http://arcnx.co/apissues) or in the WordPress [support forum](http://arcnx.co/aphelp).
+WordPress [support forum](http://arcnx.co/aphelp) or feel free to open an [issue on GitHub](http://arcnx.co/apissues).
 
 = Also Recommended =
 
@@ -90,6 +90,15 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 3. Portfolio settings
 
 == Changelog ==
+= 1.4.0 =
+* The portfolio item title can now be linked. Set the `title_link` param to "true"
+* Fixed the link type column to properly display the link data
+* Integrate with Arconix Flexslider so the link type is respected
+* Improved the Metabox experience by hiding the external link text box until "external" is selected as the hyperlink destination.
+* Added additional filters to be more extensible and developer friendly
+* Updated to the latest version of the Quicksand library
+* Code cleanup and optimization for easier maintenance
+
 = 1.3.2 =
 Resolves a conflict with themes from WooThemes that prevented users from inserting media into the editor
 
