@@ -62,6 +62,7 @@ class Arconix_Portfolio_Admin {
         add_action( 'admin_print_scripts-post-new.php',         array( $this, 'admin_scripts' ), 11 );
         add_action( 'admin_print_scripts-post.php',             array( $this, 'admin_scripts' ), 11 );
         add_action( 'wp_dashboard_setup',                       array( $this, 'register_dashboard_widget' ) );
+        add_action( 'after_setup_theme',                        array( $this, 'post_thumbnail_support' ), 9999 );
 
         add_filter( 'manage_portfolio_posts_columns',           array( $this, 'columns_filter' ) );
         add_filter( 'widget_text',                              'do_shortcode' );
@@ -156,6 +157,21 @@ class Arconix_Portfolio_Admin {
                 wp_enqueue_style( 'arconix-portfolio', $this->url . 'css/arconix-portfolio.css', false, $this->version );
         }
 
+    }
+
+    /**
+      * Check for post-thumbnails and add portfolio post type to it
+      *
+      * @global array $_wp_theme_features
+      * @since  1.5.0
+      */
+    function post_thumbnail_support() {
+        global $_wp_theme_features;
+
+        if ( !isset( $_wp_theme_features['post-thumbnails'] ) )
+            $_wp_theme_features['post-thumbnails'] = array( array( 'portfolio' ) );
+        elseif( is_array( $_wp_theme_features['post-thumbnails'] ) ) - $_wp_theme_features['post-thumbnails'][0][] = 'portfolio';
+        
     }
 
     /**
