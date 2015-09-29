@@ -128,11 +128,11 @@ class Arconix_Portfolio_Admin {
      * @example add_filter( 'pre_register_arconix_portfolio_js', '__return_false' );
      *
      * @since   0.9
-     * @version 1.4.0
+     * @version 1.5.0
      */
     public function scripts() {
-        // If WP_DEBUG is true, load the non-minified versions of the files (for development environments)
-        SCRIPT_DEBUG === true ? $prefix = '.min' : $prefix = '';
+        // If SCRIPT_DEBUG is true, load the non-minified versions of the files (for development environments)
+        SCRIPT_DEBUG === true ? $prefix = '' : $prefix = '.min';
 
         wp_register_script( 'jquery-quicksand', $this->url . 'js/jquery.quicksand' . $prefix . '.js', array( 'jquery' ), '1.4', true );
         wp_register_script( 'jquery-easing', $this->url . 'js/jquery.easing.1.3' . $prefix . '.js', array( 'jquery-quicksand' ), '1.3', true );
@@ -171,7 +171,7 @@ class Arconix_Portfolio_Admin {
         if ( !isset( $_wp_theme_features['post-thumbnails'] ) )
             $_wp_theme_features['post-thumbnails'] = array( array( 'portfolio' ) );
         elseif( is_array( $_wp_theme_features['post-thumbnails'] ) ) - $_wp_theme_features['post-thumbnails'][0][] = 'portfolio';
-        
+
     }
 
     /**
