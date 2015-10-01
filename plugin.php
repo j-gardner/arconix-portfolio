@@ -62,6 +62,7 @@ class Arconix_Portfolio_Gallery {
         require_once( $this->inc . 'class-arconix-portfolio-content-type.php' );
         require_once( $this->inc . 'class-arconix-portfolio-metaboxes.php' );
         require_once( $this->inc . 'class-arconix-portfolio-public.php' );
+        require_once( $this->inc . 'cmb2/init.php' );
 
         if ( ! class_exists( 'Gamajo_Dashboard_Glancer' ) )
             require_once( $this->inc . 'class-gamajo-dashboard-glancer.php' );
