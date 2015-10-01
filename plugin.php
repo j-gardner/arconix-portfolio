@@ -9,6 +9,8 @@
  * Author: John Gardner
  * Author URI: http://arconixpc.com
  *
+ * Text Domain: arconix-portfolio
+ *
  * License: GNU General Public License v2.0
  * License URI: http://www.opensource.org/licenses/gpl-license.php
  */
@@ -93,5 +95,6 @@ class Arconix_Portfolio_Gallery {
 /** Vroom vroom */
 add_action( 'plugins_loaded', 'arconix_portfolio_gallery_run' );
 function arconix_portfolio_gallery_run() {
-    new Arconix_Portfolio_Gallery;
+    load_plugin_textdomain( 'arconix-portfolio' );
+    new Arconix_Portfolio_Gallery();
 }
