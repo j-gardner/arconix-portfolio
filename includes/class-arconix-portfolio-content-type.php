@@ -89,7 +89,33 @@ class Arconix_Portfolio_Content_Type {
                     'menu_icon'         => 'dashicons-portfolio',
                     'has_archive'       => false,
                     'supports'          => array( 'title', 'editor', 'thumbnail' ),
-                    'rewrite'           => array( 'slug' => 'portfolio', 'with_front' => false )
+                    'rewrite'           => array( 'slug' => 'portfolio', 'with_front' => false ),
+                    'capability_type'   => 'portfolio',
+                    'map_meta_cap'      => true,
+                    'capabilities'      => array(
+                        // meta caps (don't assign these to roles)
+                        'edit_post'                 => 'edit_portfolio_item',
+			'read_post'                 => 'read_portfolio_item',
+			'delete_post'               => 'delete_portfolio_item',
+
+			// primitive/meta caps
+			'create_posts'              => 'create_portfolio_items',
+
+			// primitive caps used outside of map_meta_cap()
+			'edit_posts'                => 'edit_portfolio_items',
+			'edit_others_posts'         => 'manage_portfolio',
+			'publish_posts'             => 'manage_portfolio',
+			'read_private_posts'        => 'read',
+
+			// primitive caps used inside of map_meta_cap()
+			'read'                      => 'read',
+			'delete_posts'              => 'manage_portfolio',
+			'delete_private_posts'      => 'manage_portfolio',
+			'delete_published_posts'    => 'manage_portfolio',
+			'delete_others_posts'       => 'manage_portfolio',
+			'edit_private_posts'        => 'edit_portfolio_items',
+			'edit_published_posts'      => 'edit_portfolio_items'
+                    )
                 )
             ),
             'taxonomy' => array(
