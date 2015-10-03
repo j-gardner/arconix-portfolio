@@ -32,6 +32,16 @@ class Arconix_Portfolio_Content_Type {
     public function activation() {
         $this->content_types();
         flush_rewrite_rules();
+
+        // Get the administrator role
+        $role = get_role( 'administrator' );
+
+        // If the administrator role exists, add required capabilities for the plugin.
+        if ( !empty( $role ) ) {
+                $role->add_cap( 'manage_portfolio' );
+                $role->add_cap( 'create_portfolio_items' );
+                $role->add_cap( 'edit_portfolio_items' );
+        }
     }
 
     /**
