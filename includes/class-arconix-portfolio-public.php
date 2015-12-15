@@ -262,7 +262,7 @@ class Arconix_Portfolio {
             if( $args['heading'] )
                 $s .= "<li class='arconix-portfolio-category-title'>{$args['heading']}</li>";
 
-            $s .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'acp' ) . '</a></li>';
+            $s .= '<li class="arconix-portfolio-feature active"><a href="javascript:void(0)" class="all">' . __( 'All', 'arconix-portfolio' ) . '</a></li>';
 
             // Break each of the items into individual elements and modify the output
             foreach( $terms as $term )
