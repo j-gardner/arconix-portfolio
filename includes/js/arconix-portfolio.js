@@ -12,7 +12,7 @@ function portfolio_quicksand() {
     var $container;
     var $containerClone;
     var $filterLink;
-    var $filteredItems
+    var $filteredItems;
     
     // Set Our Filter
     $filter = jQuery('.arconix-portfolio-features li.active a').attr('class');
@@ -27,9 +27,8 @@ function portfolio_quicksand() {
     $containerClone = $container.clone();
     
     // Apply our Quicksand to work on a click function
-    // for each for the filter li link elements
-    $filterLink.click(function(e) 
-    {
+    // for each of the filter li link elements
+    $filterLink.click(function(e) {
         // Remove the active class
         jQuery('.arconix-portfolio-features li').removeClass('active');
         
@@ -49,26 +48,26 @@ function portfolio_quicksand() {
         }
         
         // Finally call the Quicksand function
-        $container.quicksand($filteredItems, 
-        {
+        $container.quicksand($filteredItems, {
+            
             // The Duration for animation
             duration: 500,
             // the easing effect when animation
             easing: 'easeInOutQuad',
             // height adjustment becomes dynamic
             adjustHeight: 'dynamic'
-            // Callback function -- put functions here that need to be re-applied after sorting
-            // i.e. some lightbox scripts, tooltips, etc...
-        }, function() { }
+
+        }, function(
+                // Callback function -- put functions here that need to be re-applied after sorting
+                // i.e. some lightbox scripts, tooltips, etc...
+            ) { }
         );
         
     });
 }
 
 jQuery(document).ready(function(){
-		
     if(jQuery().quicksand) {
         portfolio_quicksand();	
     }
-
 });
