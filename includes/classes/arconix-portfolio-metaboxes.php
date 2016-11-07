@@ -30,7 +30,7 @@ class Arconix_Portfolio_Metaboxes {
         // Initiate the metabox
         $cmb = new_cmb2_box( array(
             'id'            => 'arconix_portfolio_settings',
-            'title'         => __( 'Portfolio Setting', 'acp' ),
+            'title'         => __( 'Portfolio Setting', 'arconix-portfolio' ),
             'object_types'  => array( 'portfolio' ),
             'context'       => 'side',
             'priority'      => 'default',
@@ -40,21 +40,21 @@ class Arconix_Portfolio_Metaboxes {
         // Add the Link Type field
         $cmb->add_field( array(
             'id'        => '_acp_link_type',
-            'name'      => __( 'Select Link Type', 'acp' ),
-            'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
+            'name'      => __( 'Select Link Type', 'arconix-portfolio' ),
+            'desc'      => __( 'Set the hyperlink value for the portfolio item', 'arconix-portfolio' ),
             'type'      => 'select',
             'options'   => array(
-                'image'     => __( 'Image', 'acp' ),
-                'page'      => _x( 'Page', 'one side of a sheet of paper: words on a page', 'acp' ),
-                'external'  => __( 'External Link', 'acp' )
+                'image'     => __( 'Image', 'arconix-portfolio' ),
+                'page'      => _x( 'Page', 'one side of a sheet of paper: words on a page', 'arconix-portfolio' ),
+                'external'  => __( 'External Link', 'arconix-portfolio' )
             )
         ) );
 
         // Add the External Link url box
         $cmb->add_field( array(
             'id'        => '_acp_link_value',
-            'name'      => __( 'External Link', 'acp' ),
-            'desc'      => __( 'Enter the destination hyperlink', 'acp' ),
+            'name'      => __( 'External Link', 'arconix-portfolio' ),
+            'desc'      => __( 'Enter the destination hyperlink', 'arconix-portfolio' ),
             'type'      => 'text'
         ) );
     }

@@ -22,7 +22,7 @@ class Arconix_Portfolio {
      *
      * @since   1.4.0
      */
-    function __construct() {
+    public function __construct() {
         $this->defaults = array(
             'link'              => '',
             'thumb'             => 'portfolio-thumb',
@@ -47,7 +47,7 @@ class Arconix_Portfolio {
      * @since   1.4.0
      * @return  array    $defaults
      */
-    function defaults() {
+    public function defaults() {
         return apply_filters( 'arconix_portfolio_query_defaults', $this->defaults );
     }
 
@@ -82,7 +82,7 @@ class Arconix_Portfolio {
     * @param    bool    $echo   Echo or return the data
     * @return   string          Unordered list of portfolio items all dressed up with images and hyperlinks
     */
-    function loop( $args, $echo = false ) {
+    public function loop( $args, $echo = false ) {
         // Merge incoming args with the function defaults
         $args = wp_parse_args( $args, $this->defaults() );
         if( $args['title'] != "below" ) $args['title'] == "above"; // For backwards compatibility with "yes" and built-in data check
@@ -150,7 +150,7 @@ class Arconix_Portfolio {
      * @param  array    $args   Args pushed into the function (typically via shortcode)
      * @return string
      */
-    function before_items( $args ) {
+    public function before_items( $args ) {
         $s = $this->get_filter_list( $args );
 
         $s .= $this->begin_portfolio_grid();
@@ -167,7 +167,7 @@ class Arconix_Portfolio {
      * @param  array    $args   The args pushed into the function (typically via shortcode)
      * @return string           The image wrapped in a hyperlink
      */
-    function item( $args ) {
+    public function item( $args ) {
         // Get the terms list
         $id = get_the_ID();
         $get_the_terms = get_the_terms( $id, 'feature' );
@@ -207,7 +207,7 @@ class Arconix_Portfolio {
      * @param  array    $args   incoming arguments
      * @return string
      */
-    function after_items( $args ) {
+    public function after_items( $args ) {
         $s = $this->end_portfolio_grid();
 
         return apply_filters( 'arconix_portfolio_before_items', $s, $args );
@@ -224,7 +224,7 @@ class Arconix_Portfolio {
      * @param  array    $args   Args pushed into the function (typically via shortcode)
      * @return string           An unordered list of "features" to power the filter functionality
      */
-    function get_filter_list( $args ) {
+    public function get_filter_list( $args ) {
         $s = '';
         $a = array(); // Var to hold our operate arguments
 
@@ -280,7 +280,7 @@ class Arconix_Portfolio {
      * @since   1.4.0
      * @return  string          Begin the unordered portfolio list
      */
-    function begin_portfolio_grid() {
+    public function begin_portfolio_grid() {
         return '<ul class="arconix-portfolio-grid">';
     }
 
@@ -293,7 +293,7 @@ class Arconix_Portfolio {
      * @param   string  $full   Image size of the full image (ignored if linking to a page or external site)
      * @return  string          Image wrapped in an appropriate hyperlink
      */
-    function get_portfolio_image( $link, $thumb, $full ) {
+    public function get_portfolio_image( $link, $thumb, $full ) {
         $id = get_the_ID();
         $extra_class = apply_filters( 'arconix_portfolio_external_link_class', '' );
         $url = $this->get_portfolio_hyperlink( $link, $full );
@@ -314,7 +314,7 @@ class Arconix_Portfolio {
      * @param   string  $full       larger image size (ignored if $is_link is false or $link is not 'image')
      * @return  string              The portfolio title
      */
-    function get_portfolio_title( $is_link, $link, $full ) {
+    public function get_portfolio_title( $is_link, $link, $full ) {
         $s = '<div class="arconix-portfolio-title">';
 
         if ( $is_link === 'true' )
@@ -337,7 +337,7 @@ class Arconix_Portfolio {
      * @param   string  $display    content | excerpt | none - What content should be displayed with this portfolio item
      * @return  string              Early if set to none, otherwise the content or excerpt
      */
-    function get_portfolio_content( $display ) {
+    public function get_portfolio_content( $display ) {
         switch( $display ) {
             case "content" :
                 return '<div class="arconix-portfolio-text">' . get_the_content() . '</div>';
@@ -366,7 +366,7 @@ class Arconix_Portfolio {
      * @param   string  $full   Image size of the full image (ignored not linking to an image)
      * @return  string          Returns the proper portfolio url
      */
-    function get_portfolio_hyperlink( $link, $full ) {
+    public function get_portfolio_hyperlink( $link, $full ) {
         $id = get_the_ID();
 
         if ( ! $link )
@@ -395,7 +395,7 @@ class Arconix_Portfolio {
      * @since   1.4.0
      * @return  string          The closing unordered list html tag
      */
-    function end_portfolio_grid() {
+    public function end_portfolio_grid() {
         return '</ul>';
     }
 }
