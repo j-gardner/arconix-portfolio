@@ -54,7 +54,7 @@ class Arconix_Portfolio_Admin {
      * Loads all actions and filters to be used.
      *
      * @since   1.4.0
-     */
+     */ 
     public function init() {
         add_action( 'manage_posts_custom_column',               array( $this, 'columns_data' ) );
         add_action( 'wp_enqueue_scripts',                       array( $this, 'scripts' ) );
@@ -65,7 +65,6 @@ class Arconix_Portfolio_Admin {
 
         add_filter( 'manage_portfolio_posts_columns',           array( $this, 'columns_filter' ) );
         add_filter( 'widget_text',                              'do_shortcode' );
-
         add_image_size( 'portfolio-thumb',                      275, 200 );
         add_image_size( 'portfolio-large',                      620, 9999 );
 
@@ -73,6 +72,11 @@ class Arconix_Portfolio_Admin {
 
         // For use if Arconix Flexslider is active
         add_filter( 'arconix_flexslider_slide_image_return',    array( $this, 'flexslider_image_return' ), 10, 4 );
+    }
+
+        $columns['portfolio_link'] = 'portfolio_link';
+
+        return $columns;
     }
 
     /**
