@@ -297,7 +297,7 @@ class Arconix_Portfolio {
         $id = get_the_ID();
         $extra_class = apply_filters( 'arconix_portfolio_external_link_class', '' );
         $url = $this->get_portfolio_hyperlink( $link, $full );
-
+        if ( ! $link ) $link = get_post_meta( $id, '_acp_link_type', true );
         $s = '<a class="portfolio-' . $link . ' ' . $extra_class . '" href="' . $url . '">';
         $s .= get_the_post_thumbnail( $id, $thumb );
         $s .= '</a>';
