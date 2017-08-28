@@ -70,11 +70,49 @@ class Arconix_Portfolio_Admin {
         add_image_size( 'portfolio-large',                      620, 9999 );
 
         add_shortcode( 'portfolio',                             array( $this, 'acp_portfolio_shortcode' ) );
-
+        add_action( 'quick_edit_custom_box',                    array( $this, 'display_custom_quickedit'), 10, 2 );
+        add_action( 'save_post',                                array( $this, 'save_quick_meta' ));
         // For use if Arconix Flexslider is active
         add_filter( 'arconix_flexslider_slide_image_return',    array( $this, 'flexslider_image_return' ), 10, 4 );
     }
 
+    function save_quick_meta( $post_id ) {
+        
+        if ( isset( $_POST['_acp_link_type'] ) ) {
+            update_post_meta( $post_id, '_acp_link_type', $_POST['_acp_link_type'] );
+        }
+        if ( isset( $_POST['_acp_link_value'] ) ) {
+            update_post_meta( $post_id, '_acp_link_value', $_POST['_acp_link_value'] );
+        }
+
+    }
+
+    function display_custom_quickedit( $column_name, $post_type ) {
+        wp_enqueue_script( 'arconix-portfolio-admin-js', $this->url . 'js/admin.js', array( 'jquery' ), $this->version, true );
+        switch ( $column_name ) {
+            case 'portfolio_link':
+            ?>
+            <fieldset class="inline-edit-col-right inline-edit">
+              <div class="inline-edit-col column-<?php echo $column_name; ?>">
+                <label class="inline-edit-group">
+                    <span class="title">Link Type</span>
+                    <select class="cmb_select" name="_acp_link_type" id="_acp_link_type">   
+                        <option value="none">None</option>
+                        <option value="image">Image</option>
+                        <option value="page">Page</option>
+                        <option value="external">External Link</option>
+                    </select>
+                </label>
+                <label  id="_acp_link_value" for="_acp_link_value" style="display: none;">External Link
+                    <input type="text" class="regular-text" name="_acp_link_value" value="">
+                    <p class="cmb_metabox_description">Enter the destination hyperlink</p>
+                </label>
+              </div>
+            </fieldset>
+            <?php
+            break;
+        }
+    }
     /**
      * Filter the columns on the admin screen and define our own
      *
