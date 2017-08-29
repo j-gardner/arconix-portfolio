@@ -1,10 +1,10 @@
 === Arconix Portfolio ===
-Contributors: jgardner03
+Contributors: jgardner03, tychesoftwares
 Donate link: http://arcnx.co/acpdonation
 Tags: arconix, portfolio, quicksand, portfolio gallery
 Requires at least: 3.8
-Tested up to: 4.1
-Stable tag: 1.4.0
+Tested up to: 4.8.1
+Stable tag: 1.5.0
 License: GPLv2 or later
 
 A powerful, easy and attractive way to display your recent work on your website
@@ -24,6 +24,9 @@ Get your basic portfolio up in 5 easy steps:
 5. Sit back and marvel at the awesomeness you've just unleashed upon the internets.
 
 Like all good software there are additional ways to customize the look and behavior of your portfolio. I suggest you take a peek at the [documentation](http://arcnx.co/apwiki) which lays out the various ways you can make your portfolio more personal.
+
+> <strong>Great plugin with such kind people behind it</strong> - I have had an absolutely lovely experience with the support of the people behind this plugin. Highly recommend it! :)
+> [lassechills](https://wordpress.org/support/topic/great-plugin-with-such-kind-people-behind-it/)
 
 = Features =
 * Custom Post Type-driven portfolio showcases your work, keeping it separate from posts, pages and other content types.
@@ -90,6 +93,10 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 3. Portfolio settings
 
 == Changelog ==
+= 1.5.0 =
+* You can now edit the Link Type of the portfolio in the Quick Edit option.
+* A new Link type 'None' is added to the portfolios. If this option is selected, the image of the portfolio will not be linked to any image or page.
+
 = 1.4.0 =
 * The portfolio item title can now be linked. Set the `title_link` param to "true"
 * Fixed the link type column to properly display the link data
