@@ -56,6 +56,7 @@ class Arconix_Portfolio_Metaboxes {
                         'type'      => 'select',
                         'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
                         'options'   => array(
+                            array( 'name' => 'None',   'value' => 'none' ),
                             array( 'name' => 'Image',           'value' => 'image' ),
                             array( 'name' => 'Page',            'value' => 'page' ),
                             array( 'name' => 'External Link',   'value' => 'external' )
