@@ -5,74 +5,65 @@
  * Loads the external library and registers the necessary metabox
  *
  * @since   1.4.0
+ * @package arconix-portfolio/metabox
+ */
+
+if ( file_exists( dirname( __FILE__ ) . '/metabox/init.php' ) ) {
+	require_once dirname( __FILE__ ) . '/metabox/init.php';
+}
+
+/**
+ * Create a metabox on the Portfolio admin page.
  */
 class Arconix_Portfolio_Metaboxes {
 
-    /**
-     * Initialize the class
-     *
-     * @since   1.2.0
-     * @version 1.4.0
-     * @access  public
-     * @param   string      $version    The version of this plugin.
-     */
-    public function __construct() {
-        add_action( 'init',             array( $this, 'metabox_init' ), 9999 );
+	/**
+	 * Initialize the class
+	 *
+	 * @since   1.2.0
+	 * @version 1.4.0
+	 * @access  public
+	 */
+	public function __construct() {
+		add_action( 'cmb2_admin_init', array( $this, 'metabox_init' ) );
+	}
 
-        add_filter( 'cmb_meta_boxes',   array( $this, 'metaboxes' ) );
-    }
+	/**
+	 * Conditionally load the metabox class
+	 *
+	 * @since   1.4.0
+	 */
+	public function metabox_init() {
+		$acp_box = new_cmb2_box(
+			array(
+				'id'           => '_acp_metabox',
+				'title'        => esc_html__( 'Portfolio Setting', 'acp' ),
+				'object_types' => array( 'portfolio' ),
+			)
+		);
 
-    /**
-     * Conditionally load the metabox class
-     *
-     * @since   1.4.0
-     */
-    public function metabox_init() {
-        if ( ! class_exists( 'cmb_Meta_Box' ) )
-            require_once( $this->inc . 'metabox/init.php');
-    }
+		$acp_box->add_field(
+			array(
+				'name'             => esc_html__( 'Select Link Type', 'acp' ),
+				'desc'             => esc_html__( 'Set the hyperlink value for the portfolio item', 'acp' ),
+				'id'               => '_acp_link_type',
+				'type'             => 'select',
+				'show_option_none' => true,
+				'options'          => array(
+					'image'    => esc_html__( 'Image', 'acp' ),
+					'page'     => esc_html__( 'Page', 'acp' ),
+					'external' => esc_html__( 'External', 'acp' ),
+				),
+			)
+		);
 
-    /**
-     * Create the post type metabox
-     *
-     * @since   1.3.0
-     * @version 1.4.0
-     * @param   array   $meta_boxes     Existing metaboxes
-     * @return  array   $meta_boxes     Array with new metabox added
-     */
-    public function metaboxes( $meta_boxes ) {
-        $meta_boxes['portfolio_settings'] =
-            apply_filters( 'arconix_portfolio_metabox', array(
-                'id'            => 'portfolio_settings',
-                'title'         => __( 'Portfolio Setting', 'acp' ),
-                'pages'         => array( 'portfolio' ),
-                'context'       => 'side',
-                'priority'      => 'default',
-                'show_names'    => false,
-                'fields'        => array(
-                    array(
-                        'id'        => '_acp_link_type',
-                        'name'      => __( 'Select Link Type', 'acp' ),
-                        'type'      => 'select',
-                        'desc'      => __( 'Set the hyperlink value for the portfolio item', 'acp' ),
-                        'options'   => array(
-                            array( 'name' => 'None',   'value' => 'none' ),
-                            array( 'name' => 'Image',           'value' => 'image' ),
-                            array( 'name' => 'Page',            'value' => 'page' ),
-                            array( 'name' => 'External Link',   'value' => 'external' )
-                        )
-                    ),
-                    array(
-                        'id'        => '_acp_link_value',
-                        'name'      => __( 'External Link', 'acp' ),
-                        'desc'      => __( 'Enter the destination hyperlink', 'acp' ),
-                        'type'      => 'text'
-                    )
-                )
-            )
-        );
-
-        return $meta_boxes;
-    }
-
+		$acp_box->add_field(
+			array(
+				'name' => esc_html__( 'External Link', 'acp' ),
+				'desc' => esc_html__( 'Enter the destination hyperlink', 'acp' ),
+				'id'   => '_acp_link_value',
+				'type' => 'text_url',
+			)
+		);
+	}
 }
