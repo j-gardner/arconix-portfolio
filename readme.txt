@@ -3,8 +3,8 @@ Contributors: jgardner03, tychesoftwares
 Donate link: http://arcnx.co/acpdonation
 Tags: arconix, portfolio, quicksand, portfolio gallery
 Requires at least: 3.8
-Tested up to: 4.8.1
-Stable tag: 1.5.0
+Tested up to: 5.2.4
+Stable tag: 1.6.0
 License: GPLv2 or later
 
 A powerful, easy and attractive way to display your recent work on your website
@@ -93,6 +93,10 @@ That's fantastic! Feel free to submit a pull request over at [Github](http://arc
 3. Portfolio settings
 
 == Changelog ==
+= 1.6.0 =
+* Updated the CMB library to its latest version.
+* Optimized code with respect to WordPress Coding Standards
+
 = 1.5.0 =
 * You can now edit the Link Type of the portfolio in the Quick Edit option.
 * A new Link type 'None' is added to the portfolios. If this option is selected, the image of the portfolio will not be linked to any image or page.

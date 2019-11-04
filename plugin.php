@@ -1,13 +1,13 @@
 <?php
 /**
  * Plugin Name: Arconix Portfolio Gallery
- * Plugin URI: http://arconixpc.com/plugins/arconix-portfolio
+ * Plugin URI: https://www.tychesoftwares.com
  * Description: Portfolio Gallery provides an easy way to display your portfolio on your website
  *
- * Version: 1.5.0
+ * Version: 1.6.0
  *
- * Author: John Gardner
- * Author URI: http://arconixpc.com
+ * Author: Tyche Softwares
+ * Author URI: https://www.tychesoftwares.com
  *
  * License: GNU General Public License v2.0
  * License URI: http://www.opensource.org/licenses/gpl-license.php
@@ -45,7 +45,7 @@ class Arconix_Portfolio_Gallery {
 	 * @version 1.4.0
 	 */
 	public function __construct() {
-		$this->version = '1.5.0';
+		$this->version = '1.6.0';
 		$this->inc     = trailingslashit( plugin_dir_path( __FILE__ ) . '/includes' );
 		$this->load_dependencies();
 		$this->launch();
