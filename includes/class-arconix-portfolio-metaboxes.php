@@ -48,8 +48,8 @@ class Arconix_Portfolio_Metaboxes {
 				'desc'             => esc_html__( 'Set the hyperlink value for the portfolio item', 'acp' ),
 				'id'               => '_acp_link_type',
 				'type'             => 'select',
-				'show_option_none' => true,
 				'options'          => array(
+					'none'	   => esc_html__( 'None', 'acp' ),
 					'image'    => esc_html__( 'Image', 'acp' ),
 					'page'     => esc_html__( 'Page', 'acp' ),
 					'external' => esc_html__( 'External', 'acp' ),
