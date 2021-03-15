@@ -3,7 +3,7 @@ Contributors: jgardner03, tychesoftwares
 Donate link: http://arcnx.co/acpdonation
 Tags: arconix, portfolio, quicksand, portfolio gallery
 Requires at least: 3.8
-Tested up to: 5.5
+Tested up to: 5.7
 Stable tag: 1.6.0
 License: GPLv2 or later
 
